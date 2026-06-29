@@ -2,29 +2,60 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Project Status
+## Commands
 
-This is a new, empty project. No source files, build system, or test framework have been set up yet.
+```bash
+# Install all dependencies
+pnpm install
+
+# Run all apps in dev mode
+pnpm dev
+
+# Run a single app
+pnpm --filter web dev        # Next.js web app on http://localhost:3000
+pnpm --filter mobile start   # Expo mobile app
+
+# Build all
+pnpm build
+
+# Lint all
+pnpm lint
+
+# Type check all
+pnpm type-check
+
+# Run a command in a specific package
+pnpm --filter web <command>
+pnpm --filter mobile <command>
+pnpm --filter @buildsup/shared <command>
+```
+
+## Architecture
+
+Turborepo monorepo with two apps and one shared package:
+
+```
+apps/
+  web/      Next.js 16 (App Router, Tailwind CSS, TypeScript)
+  mobile/   Expo (React Native, TypeScript)
+packages/
+  shared/   Shared TypeScript types (@buildsup/shared)
+```
+
+**Backend:** Supabase (PostgreSQL, Auth, Storage, Realtime) — cloud only. No custom API server.
+
+**Supabase clients:**
+- `apps/web/lib/supabase/client.ts` — browser client (use in Client Components)
+- `apps/web/lib/supabase/server.ts` — server client (use in Server Components, Route Handlers)
+- `apps/mobile/lib/supabase.ts` — singleton client for React Native
+
+**Shared types** (`packages/shared/src/types.ts`) define the four core domains: `materials`, `chemicals`, `services`, `labour` — each listing has a `type` of either `availability` or `requirement`.
+
+**Environment variables:** Copy `.env.example` to `.env.local` (web) and `.env` (mobile) and fill in Supabase credentials from https://supabase.com/dashboard. Never commit `.env*` files.
 
 ## MCP Tools: code-review-graph
 
-**IMPORTANT: This project has a knowledge graph. ALWAYS use the
-code-review-graph MCP tools BEFORE using Grep/Glob/Read to explore
-the codebase.** The graph is faster, cheaper (fewer tokens), and gives
-you structural context (callers, dependents, test coverage) that file
-scanning cannot.
-
-### When to use graph tools FIRST
-
-- **Exploring code**: `semantic_search_nodes` or `query_graph` instead of Grep
-- **Understanding impact**: `get_impact_radius` instead of manually tracing imports
-- **Code review**: `detect_changes` + `get_review_context` instead of reading entire files
-- **Finding relationships**: `query_graph` with callers_of/callees_of/imports_of/tests_for
-- **Architecture questions**: `get_architecture_overview` + `list_communities`
-
-Fall back to Grep/Glob/Read **only** when the graph doesn't cover what you need.
-
-### Key Tools
+**IMPORTANT: Always use code-review-graph MCP tools BEFORE Grep/Glob/Read to explore the codebase.**
 
 | Tool | Use when |
 |------|----------|
@@ -35,11 +66,7 @@ Fall back to Grep/Glob/Read **only** when the graph doesn't cover what you need.
 | `query_graph` | Tracing callers, callees, imports, tests, dependencies |
 | `semantic_search_nodes` | Finding functions/classes by name or keyword |
 | `get_architecture_overview` | Understanding high-level codebase structure |
-| `refactor_tool` | Planning renames, finding dead code |
 
 ## Change Log
 
-All changes to files in this project must be documented in `CHANGELOG.md` at the project root. Each entry must include:
-- The file modified
-- Line numbers affected
-- Code added, changed, or deleted (with original content for changes/deletions)
+All changes to files must be documented in `CHANGELOG.md` at the project root. Each entry must include the file modified, line numbers affected, and the code added, changed, or deleted.

@@ -1,2 +1,23 @@
+# Dependencies
+node_modules
+
+# Build outputs
+.next
+out
+dist
+.expo
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Turbo
+.turbo
+
+# Local tool files
 .code-review-graph/graph.db
 .claude/settings.local.json
+
+# OS
+.DS_Store
