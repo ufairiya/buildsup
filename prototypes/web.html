@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BuildsUp — Construction Marketplace</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --amber: #F59E0B; --amber-dark: #D97706; --amber-light: #FEF3C7;
+    --slate-900: #1E293B; --slate-700: #334155; --slate-500: #64748B;
+    --slate-300: #CBD5E1; --slate-200: #E2E8F0; --slate-100: #F1F5F9; --slate-50: #F8FAFC;
+    --blue: #3B82F6; --purple: #8B5CF6; --green: #10B981; --orange: #F97316;
+    --red: #EF4444; --white: #fff;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow: 0 4px 12px rgba(0,0,0,0.08);
+    --radius: 8px; --radius-lg: 12px;
+  }
+  body { font-family: 'Inter', sans-serif; background: var(--slate-50); color: var(--slate-900); line-height: 1.5; }
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: block; }
+
+  /* ── HEADER ── */
+  .header { background: var(--white); border-bottom: 1px solid var(--slate-200); position: sticky; top: 0; z-index: 100; }
+  .header-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; gap: 32px; height: 64px; }
+  .logo { font-size: 20px; font-weight: 800; color: var(--slate-900); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+  .logo-icon { font-size: 24px; }
+  .nav { display: flex; gap: 4px; flex: 1; }
+  .nav a { padding: 8px 14px; border-radius: 6px; font-size: 14px; font-weight: 500; color: var(--slate-700); text-decoration: none; cursor: pointer; }
+  .nav a:hover { background: var(--slate-100); color: var(--slate-900); }
+  .header-actions { display: flex; gap: 8px; margin-left: auto; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; border-radius: var(--radius); font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; text-decoration: none; }
+  .btn-primary { background: var(--amber); color: var(--white); }
+  .btn-primary:hover { background: var(--amber-dark); }
+  .btn-outline { background: transparent; color: var(--slate-700); border: 1.5px solid var(--slate-300); }
+  .btn-outline:hover { border-color: var(--slate-500); background: var(--slate-50); }
+  .btn-sm { padding: 6px 12px; font-size: 13px; }
+  .btn-ghost { background: transparent; color: var(--slate-500); border: none; }
+  .btn-ghost:hover { color: var(--slate-900); }
+  .btn-danger { background: #FEE2E2; color: var(--red); }
+  .btn-danger:hover { background: #FCA5A5; }
+
+  /* ── BADGES ── */
+  .badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+  .badge-materials { background: #EFF6FF; color: var(--blue); }
+  .badge-chemicals { background: #F5F3FF; color: var(--purple); }
+  .badge-services { background: #ECFDF5; color: var(--green); }
+  .badge-labour { background: #FFF7ED; color: var(--orange); }
+  .badge-availability { background: #ECFDF5; color: var(--green); }
+  .badge-requirement { background: #FFF7ED; color: #EA580C; }
+
+  /* ── LISTING CARD ── */
+  .listing-card { background: var(--white); border: 1px solid var(--slate-200); border-radius: var(--radius-lg); padding: 20px; display: flex; flex-direction: column; gap: 12px; transition: box-shadow 0.15s, transform 0.15s; cursor: pointer; }
+  .listing-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+  .card-header { display: flex; justify-content: space-between; align-items: flex-start; }
+  .card-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+  .card-title { font-size: 15px; font-weight: 600; color: var(--slate-900); line-height: 1.4; }
+  .card-meta { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--slate-500); }
+  .card-price { font-size: 16px; font-weight: 700; color: var(--slate-900); }
+  .card-price span { font-size: 13px; font-weight: 400; color: var(--slate-500); }
+  .card-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--slate-100); }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--amber-light); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: var(--amber-dark); flex-shrink: 0; }
+  .avatar-lg { width: 48px; height: 48px; font-size: 18px; }
+  .poster-info { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--slate-600); }
+
+  /* ── GRID LAYOUTS ── */
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  @media (max-width: 900px) { .grid-3 { grid-template-columns: repeat(2,1fr); } }
+
+  /* ── HOME SCREEN ── */
+  .hero { background: linear-gradient(135deg, #1E293B 0%, #334155 60%, #1E3A5F 100%); padding: 80px 24px; text-align: center; }
+  .hero h1 { font-size: 48px; font-weight: 800; color: var(--white); margin-bottom: 16px; line-height: 1.15; }
+  .hero h1 em { color: var(--amber); font-style: normal; }
+  .hero p { font-size: 18px; color: #94A3B8; margin-bottom: 40px; max-width: 560px; margin-left: auto; margin-right: auto; }
+  .hero-search { display: flex; max-width: 680px; margin: 0 auto; background: var(--white); border-radius: 12px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
+  .hero-search select { border: none; padding: 0 16px; font-size: 14px; font-weight: 500; color: var(--slate-700); border-right: 1px solid var(--slate-200); background: var(--white); cursor: pointer; outline: none; min-width: 140px; }
+  .hero-search input { flex: 1; border: none; padding: 18px 20px; font-size: 16px; outline: none; font-family: 'Inter', sans-serif; color: var(--slate-900); }
+  .hero-search input::placeholder { color: var(--slate-400); }
+  .hero-search .btn { border-radius: 0; padding: 18px 28px; font-size: 15px; }
+  .stats-bar { background: var(--white); border-bottom: 1px solid var(--slate-200); }
+  .stats-inner { max-width: 1200px; margin: 0 auto; padding: 16px 24px; display: flex; gap: 32px; }
+  .stat { font-size: 14px; color: var(--slate-600); }
+  .stat strong { color: var(--slate-900); font-weight: 700; }
+  .category-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .cat-pill { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 32px; border: 1.5px solid var(--slate-200); background: var(--white); font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+  .cat-pill:hover, .cat-pill.active { border-color: var(--amber); background: var(--amber-light); color: var(--amber-dark); }
+  .section { padding: 48px 0; }
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+  .section-title { font-size: 22px; font-weight: 700; color: var(--slate-900); }
+  .footer { background: var(--slate-900); color: #94A3B8; padding: 40px 24px; text-align: center; font-size: 14px; margin-top: 48px; }
+  .footer strong { color: var(--white); }
+
+  /* ── BROWSE SCREEN ── */
+  .browse-layout { max-width: 1200px; margin: 0 auto; padding: 32px 24px; display: grid; grid-template-columns: 260px 1fr; gap: 28px; }
+  .sidebar { background: var(--white); border: 1px solid var(--slate-200); border-radius: var(--radius-lg); padding: 24px; height: fit-content; position: sticky; top: 80px; }
+  .sidebar-title { font-size: 13px; font-weight: 700; color: var(--slate-500); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }
+  .filter-group { margin-bottom: 24px; }
+  .filter-group:last-of-type { margin-bottom: 0; }
+  .filter-group label { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--slate-700); padding: 6px 0; cursor: pointer; }
+  .filter-group input[type=checkbox], .filter-group input[type=radio] { accent-color: var(--amber); width: 15px; height: 15px; }
+  .filter-input { width: 100%; padding: 9px 12px; border: 1.5px solid var(--slate-200); border-radius: var(--radius); font-size: 14px; font-family: 'Inter', sans-serif; outline: none; color: var(--slate-900); }
+  .filter-input:focus { border-color: var(--amber); }
+  .results-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .results-count { font-size: 14px; color: var(--slate-500); }
+  .results-count strong { color: var(--slate-900); font-weight: 700; }
+  .sort-select { padding: 7px 12px; border: 1.5px solid var(--slate-200); border-radius: var(--radius); font-size: 14px; font-family: 'Inter', sans-serif; outline: none; color: var(--slate-700); cursor: pointer; background: var(--white); }
+
+  /* ── DETAIL SCREEN ── */
+  .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--slate-500); padding: 16px 0; }
+  .breadcrumb a { color: var(--slate-500); text-decoration: none; cursor: pointer; }
+  .breadcrumb a:hover { color: var(--amber); }
+  .breadcrumb span { color: var(--slate-300); }
+  .detail-layout { display: grid; grid-template-columns: 1fr 360px; gap: 32px; padding-bottom: 48px; }
+  .image-gallery { background: var(--slate-100); border-radius: var(--radius-lg); aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; font-size: 48px; border: 1px solid var(--slate-200); }
+  .thumb-row { display: flex; gap: 8px; }
+  .thumb { width: 72px; height: 56px; background: var(--slate-100); border-radius: 6px; border: 2px solid transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+  .thumb.active { border-color: var(--amber); }
+  .detail-title { font-size: 26px; font-weight: 800; color: var(--slate-900); margin: 20px 0 12px; }
+  .spec-table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+  .spec-table td { padding: 10px 0; border-bottom: 1px solid var(--slate-100); font-size: 14px; }
+  .spec-table td:first-child { color: var(--slate-500); width: 40%; }
+  .spec-table td:last-child { font-weight: 600; color: var(--slate-900); }
+  .price-card { background: var(--white); border: 1px solid var(--slate-200); border-radius: var(--radius-lg); padding: 24px; position: sticky; top: 80px; }
+  .price-big { font-size: 32px; font-weight: 800; color: var(--slate-900); }
+  .price-unit { font-size: 14px; color: var(--slate-500); font-weight: 400; }
+  .seller-card { background: var(--slate-50); border-radius: var(--radius); padding: 16px; margin: 20px 0; display: flex; align-items: center; gap: 12px; }
+  .seller-info { flex: 1; }
+  .seller-name { font-size: 15px; font-weight: 600; }
+  .seller-meta { font-size: 12px; color: var(--slate-500); }
+  .divider { border: none; border-top: 1px solid var(--slate-100); margin: 20px 0; }
+
+  /* ── AUTH SCREENS ── */
+  .auth-page { min-height: 100vh; background: var(--slate-50); display: flex; flex-direction: column; }
+  .auth-card { background: var(--white); border: 1px solid var(--slate-200); border-radius: var(--radius-lg); padding: 40px; max-width: 420px; width: 100%; margin: 40px auto; box-shadow: var(--shadow-sm); }
+  .auth-logo { text-align: center; margin-bottom: 32px; }
+  .auth-logo .logo { justify-content: center; font-size: 24px; }
+  .auth-title { font-size: 24px; font-weight: 800; color: var(--slate-900); margin-bottom: 8px; }
+  .auth-sub { font-size: 14px; color: var(--slate-500); margin-bottom: 28px; }
+  .form-group { margin-bottom: 16px; }
+  .form-label { display: block; font-size: 13px; font-weight: 600; color: var(--slate-700); margin-bottom: 6px; }
+  .form-input { width: 100%; padding: 10px 14px; border: 1.5px solid var(--slate-200); border-radius: var(--radius); font-size: 14px; font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.15s; color: var(--slate-900); }
+  .form-input:focus { border-color: var(--amber); box-shadow: 0 0 0 3px rgba(245,158,11,0.1); }
+  .form-hint { font-size: 12px; color: var(--slate-400); margin-top: 4px; }
+  .auth-link { font-size: 14px; color: var(--slate-500); text-align: center; margin-top: 20px; }
+  .auth-link a { color: var(--amber-dark); font-weight: 600; cursor: pointer; text-decoration: none; }
+  .auth-link a:hover { text-decoration: underline; }
+  .or-divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; font-size: 13px; color: var(--slate-400); }
+  .or-divider::before, .or-divider::after { content: ''; flex: 1; border-top: 1px solid var(--slate-200); }
+  .role-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 4px; }
+  .role-option { border: 1.5px solid var(--slate-200); border-radius: var(--radius); padding: 10px; text-align: center; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--slate-700); transition: all 0.15s; }
+  .role-option.selected { border-color: var(--amber); background: var(--amber-light); color: var(--amber-dark); }
+
+  /* ── DASHBOARD ── */
+  .dash-layout { display: grid; grid-template-columns: 240px 1fr; min-height: calc(100vh - 64px); }
+  .dash-sidebar { background: var(--white); border-right: 1px solid var(--slate-200); padding: 24px 16px; }
+  .dash-user { text-align: center; padding: 16px; margin-bottom: 8px; }
+  .dash-user .avatar-lg { margin: 0 auto 12px; width: 60px; height: 60px; font-size: 22px; }
+  .dash-user-name { font-size: 15px; font-weight: 700; }
+  .dash-user-email { font-size: 12px; color: var(--slate-500); }
+  .dash-nav { display: flex; flex-direction: column; gap: 2px; }
+  .dash-nav a { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: var(--radius); font-size: 14px; font-weight: 500; color: var(--slate-600); text-decoration: none; cursor: pointer; }
+  .dash-nav a:hover { background: var(--slate-100); color: var(--slate-900); }
+  .dash-nav a.active { background: var(--amber-light); color: var(--amber-dark); font-weight: 600; }
+  .dash-nav .icon { font-size: 16px; width: 20px; text-align: center; }
+  .dash-content { padding: 32px; background: var(--slate-50); }
+  .dash-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+  .dash-title { font-size: 24px; font-weight: 800; }
+  .tab-bar { display: flex; gap: 2px; background: var(--slate-100); border-radius: var(--radius); padding: 4px; width: fit-content; margin-bottom: 24px; }
+  .tab-item { padding: 7px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--slate-600); }
+  .tab-item.active { background: var(--white); color: var(--slate-900); box-shadow: var(--shadow-sm); }
+  .listing-row { background: var(--white); border: 1px solid var(--slate-200); border-radius: var(--radius); padding: 16px 20px; display: flex; align-items: center; gap: 16px; margin-bottom: 10px; }
+  .listing-row-title { flex: 1; font-size: 14px; font-weight: 600; }
+  .listing-row-meta { font-size: 12px; color: var(--slate-500); margin-top: 2px; }
+  .listing-row-actions { display: flex; gap: 6px; }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .status-dot.active { background: var(--green); }
+  .status-dot.inactive { background: var(--slate-300); }
+  .empty-state { text-align: center; padding: 60px; color: var(--slate-500); }
+  .empty-icon { font-size: 48px; margin-bottom: 16px; }
+
+  /* ── CREATE LISTING ── */
+  .create-form { background: var(--white); border: 1px solid var(--slate-200); border-radius: var(--radius-lg); padding: 32px; max-width: 760px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-select { width: 100%; padding: 10px 14px; border: 1.5px solid var(--slate-200); border-radius: var(--radius); font-size: 14px; font-family: 'Inter', sans-serif; outline: none; color: var(--slate-900); background: var(--white); cursor: pointer; }
+  .form-select:focus { border-color: var(--amber); }
+  .form-textarea { width: 100%; padding: 10px 14px; border: 1.5px solid var(--slate-200); border-radius: var(--radius); font-size: 14px; font-family: 'Inter', sans-serif; outline: none; min-height: 100px; resize: vertical; color: var(--slate-900); }
+  .form-textarea:focus { border-color: var(--amber); }
+  .upload-area { border: 2px dashed var(--slate-300); border-radius: var(--radius-lg); padding: 40px; text-align: center; cursor: pointer; transition: all 0.15s; }
+  .upload-area:hover { border-color: var(--amber); background: var(--amber-light); }
+  .upload-icon { font-size: 36px; margin-bottom: 12px; }
+  .upload-text { font-size: 14px; color: var(--slate-500); }
+  .upload-text strong { color: var(--amber-dark); }
+  .type-toggle { display: flex; gap: 0; border: 1.5px solid var(--slate-200); border-radius: var(--radius); overflow: hidden; }
+  .type-toggle-btn { flex: 1; padding: 9px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; background: var(--white); color: var(--slate-600); transition: all 0.15s; }
+  .type-toggle-btn.active { background: var(--amber); color: var(--white); }
+  .form-section { margin-bottom: 28px; }
+  .form-section-title { font-size: 13px; font-weight: 700; color: var(--slate-500); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--slate-100); }
+
+  /* ── MESSAGES ── */
+  .messages-layout { display: grid; grid-template-columns: 320px 1fr; height: calc(100vh - 64px); }
+  .thread-list { border-right: 1px solid var(--slate-200); background: var(--white); overflow-y: auto; }
+  .thread-search { padding: 16px; border-bottom: 1px solid var(--slate-100); }
+  .thread-item { display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; cursor: pointer; border-bottom: 1px solid var(--slate-50); transition: background 0.1s; }
+  .thread-item:hover, .thread-item.active { background: var(--slate-50); }
+  .thread-item.active { border-left: 3px solid var(--amber); }
+  .thread-content { flex: 1; min-width: 0; }
+  .thread-name { font-size: 14px; font-weight: 600; color: var(--slate-900); }
+  .thread-listing { font-size: 12px; color: var(--amber-dark); margin-bottom: 2px; }
+  .thread-preview { font-size: 12px; color: var(--slate-500); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .thread-time { font-size: 11px; color: var(--slate-400); white-space: nowrap; }
+  .unread-badge { background: var(--amber); color: var(--white); font-size: 11px; font-weight: 700; border-radius: 10px; padding: 2px 6px; }
+  .chat-area { display: flex; flex-direction: column; height: 100%; background: var(--slate-50); }
+  .chat-header { background: var(--white); border-bottom: 1px solid var(--slate-200); padding: 14px 20px; display: flex; align-items: center; gap: 12px; }
+  .chat-header-info { flex: 1; }
+  .chat-header-name { font-size: 15px; font-weight: 700; }
+  .chat-header-sub { font-size: 12px; color: var(--slate-500); }
+  .chat-messages { flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+  .msg-bubble { max-width: 60%; }
+  .msg-bubble.sent { align-self: flex-end; }
+  .msg-bubble.received { align-self: flex-start; }
+  .msg-text { padding: 10px 14px; border-radius: 12px; font-size: 14px; line-height: 1.5; }
+  .msg-bubble.sent .msg-text { background: var(--amber); color: var(--white); border-bottom-right-radius: 4px; }
+  .msg-bubble.received .msg-text { background: var(--white); color: var(--slate-900); border: 1px solid var(--slate-200); border-bottom-left-radius: 4px; }
+  .msg-time { font-size: 11px; color: var(--slate-400); margin-top: 4px; }
+  .msg-bubble.sent .msg-time { text-align: right; }
+  .chat-input { background: var(--white); border-top: 1px solid var(--slate-200); padding: 16px 20px; display: flex; gap: 10px; }
+  .chat-input input { flex: 1; padding: 10px 14px; border: 1.5px solid var(--slate-200); border-radius: 24px; font-size: 14px; font-family: 'Inter', sans-serif; outline: none; }
+  .chat-input input:focus { border-color: var(--amber); }
+  .btn-send { background: var(--amber); color: var(--white); border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .btn-send:hover { background: var(--amber-dark); }
+
+  /* ── MISC ── */
+  .price-input-group { display: flex; gap: 0; }
+  .price-input-group select { border-radius: var(--radius) 0 0 var(--radius); border-right: none; padding: 10px 10px; width: 80px; border: 1.5px solid var(--slate-200); font-size: 14px; font-family: 'Inter', sans-serif; outline: none; background: var(--slate-50); }
+  .price-input-group input { border-radius: 0 var(--radius) var(--radius) 0; border-left: none; flex: 1; padding: 10px 14px; border: 1.5px solid var(--slate-200); font-size: 14px; font-family: 'Inter', sans-serif; outline: none; }
+  .price-input-group select:focus, .price-input-group input:focus { border-color: var(--amber); }
+  .checkbox-row { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: var(--slate-600); margin-top: 4px; }
+  .checkbox-row input { margin-top: 2px; accent-color: var(--amber); }
+  .forgot-link { display: block; text-align: right; font-size: 13px; color: var(--amber-dark); font-weight: 500; text-decoration: none; margin-top: -8px; margin-bottom: 20px; cursor: pointer; }
+  .similar-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 32px; }
+  .w-full { width: 100%; }
+  .mt-8 { margin-top: 8px; }
+  .mt-12 { margin-top: 12px; }
+  .mt-16 { margin-top: 16px; }
+  .mt-24 { margin-top: 24px; }
+  .mt-32 { margin-top: 32px; }
+  .mb-8 { margin-bottom: 8px; }
+  .mb-16 { margin-bottom: 16px; }
+  .mb-24 { margin-bottom: 24px; }
+  .text-sm { font-size: 13px; }
+  .text-muted { color: var(--slate-500); }
+  .font-bold { font-weight: 700; }
+  .alert { padding: 12px 16px; border-radius: var(--radius); font-size: 14px; margin-bottom: 16px; }
+  .alert-success { background: #ECFDF5; color: #065F46; border: 1px solid #A7F3D0; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     SCREEN: HOME
+══════════════════════════════════════ -->
+<div id="screen-home" class="screen active">
+  <header class="header">
+    <div class="header-inner">
+      <a class="logo" onclick="showScreen('screen-home')"><span class="logo-icon">🏗️</span> BuildsUp</a>
+      <nav class="nav">
+        <a onclick="showScreen('screen-browse')">Browse Listings</a>
+        <a onclick="showScreen('screen-create')">Post a Listing</a>
+        <a onclick="showScreen('screen-messages')">Messages</a>
+      </nav>
+      <div class="header-actions">
+        <button class="btn btn-outline btn-sm" onclick="showScreen('screen-login')">Sign In</button>
+        <button class="btn btn-primary btn-sm" onclick="showScreen('screen-register')">Sign Up</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="hero">
+    <h1>India's Construction<br><em>Marketplace</em></h1>
+    <p>Find and list materials, chemicals, services and labour — connect directly with buyers and sellers across the country.</p>
+    <div class="hero-search">
+      <select>
+        <option>All Categories</option>
+        <option>Materials</option>
+        <option>Chemicals</option>
+        <option>Services</option>
+        <option>Labour</option>
+      </select>
+      <input type="text" placeholder="Search for TMT bars, cement, electricians...">
+      <button class="btn btn-primary" onclick="showScreen('screen-browse')">🔍 Search</button>
+    </div>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stats-inner">
+      <div class="stat"><strong>12,400+</strong> Active Listings</div>
+      <div class="stat"><strong>3,800+</strong> Verified Sellers</div>
+      <div class="stat"><strong>28</strong> States Covered</div>
+      <div class="stat"><strong>4 Categories:</strong> Materials · Chemicals · Services · Labour</div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="section">
+      <div class="section-header">
+        <h2 class="section-title">Browse by Category</h2>
+      </div>
+      <div class="category-row">
+        <div class="cat-pill" onclick="showScreen('screen-browse')">🧱 Materials</div>
+        <div class="cat-pill" onclick="showScreen('screen-browse')">⚗️ Chemicals</div>
+        <div class="cat-pill" onclick="showScreen('screen-browse')">🔧 Services</div>
+        <div class="cat-pill" onclick="showScreen('screen-browse')">👷 Labour</div>
+        <div class="cat-pill" onclick="showScreen('screen-browse')">📦 Availability</div>
+        <div class="cat-pill" onclick="showScreen('screen-browse')">🔍 Requirements</div>
+      </div>
+    </div>
+
+    <div class="section" style="padding-top:0">
+      <div class="section-header">
+        <h2 class="section-title">Recent Listings</h2>
+        <a class="btn btn-ghost btn-sm" onclick="showScreen('screen-browse')">View all →</a>
+      </div>
+      <div class="grid-3">
+
+        <div class="listing-card" onclick="showScreen('screen-detail')">
+          <div class="card-header">
+            <div class="card-badges">
+              <span class="badge badge-materials">Materials</span>
+              <span class="badge badge-availability">Availability</span>
+            </div>
+          </div>
+          <div class="card-title">TMT Steel Bars — Fe500 Grade, 16mm &amp; 20mm</div>
+          <div class="card-meta">📍 Mumbai, Maharashtra</div>
+          <div class="card-price">₹62,500 <span>/ MT</span></div>
+          <div class="card-footer">
+            <div class="poster-info"><div class="avatar">RK</div> Rajesh Kumar</div>
+            <button class="btn btn-primary btn-sm">View Details</button>
+          </div>
+        </div>
+
+        <div class="listing-card" onclick="showScreen('screen-detail')">
+          <div class="card-header">
+            <div class="card-badges">
+              <span class="badge badge-chemicals">Chemicals</span>
+              <span class="badge badge-availability">Availability</span>
+            </div>
+          </div>
+          <div class="card-title">Epoxy Flooring Compound — 2-Part, High Gloss</div>
+          <div class="card-meta">📍 Pune, Maharashtra</div>
+          <div class="card-price">₹280 <span>/ kg</span></div>
+          <div class="card-footer">
+            <div class="poster-info"><div class="avatar">SP</div> Sanjay Parekh</div>
+            <button class="btn btn-primary btn-sm">View Details</button>
+          </div>
+        </div>
+
+        <div class="listing-card" onclick="showScreen('screen-detail')">
+          <div class="card-header">
+            <div class="card-badges">
+              <span class="badge badge-labour">Labour</span>
+              <span class="badge badge-requirement">Requirement</span>
+            </div>
+          </div>
+          <div class="card-title">Experienced Electricians Required — Commercial Project</div>
+          <div class="card-meta">📍 Bengaluru, Karnataka</div>
+          <div class="card-price">₹850 <span>/ day</span></div>
+          <div class="card-footer">
+            <div class="poster-info"><div class="avatar">AM</div> Arjun Mehta</div>
+            <button class="btn btn-primary btn-sm">View Details</button>
+          </div>
+        </div>
+
+        <div class="listing-card" onclick="showScreen('screen-detail')">
+          <div class="card-header">
+            <div class="card-badges">
+              <span class="badge badge-services">Services</span>
+              <span class="badge badge-availability">Availability</span>
+            </div>
+          </div>
+          <div class="card-title">Structural Design &amp; Drawing Services — ISO Certified Firm</div>
+          <div class="card-meta">📍 Chennai, Tamil Nadu</div>
+          <div class="card-price">₹45,000 <span>/ project</span></div>
+          <div class="card-footer">
+            <div class="poster-info"><div class="avatar">VS</div> VarmaStruct Pvt.</div>
+            <button class="btn btn-primary btn-sm">View Details</button>
+          </div>
+        </div>
+
+        <div class="listing-card" onclick="showScreen('screen-detail')">
+          <div class="card-header">
+            <div class="card-badges">
+              <span class="badge badge-materials">Materials</span>
+              <span class="badge badge-requirement">Requirement</span>
+            </div>
+          </div>
+          <div class="card-title">OPC 53-Grade Cement Required — 500 Bags/Month</div>
+          <div class="card-meta">📍 Hyderabad, Telangana</div>
+          <div class="card-price">₹380 <span>/ bag</span></div>
+          <div class="card-footer">
+            <div class="poster-info"><div class="avatar">NR</div> Nandini Realtors</div>
+            <button class="btn btn-primary btn-sm">View Details</button>
+          </div>
+        </div>
+
+        <div class="listing-card" onclick="showScreen('screen-detail')">
+          <div class="card-header">
+            <div class="card-badges">
+              <span class="badge badge-labour">Labour</span>
+              <span class="badge badge-availability">Availability</span>
+            </div>
+          </div>
+          <div class="card-title">Plumber Team Available — Residential &amp; Commercial</div>
+          <div class="card-meta">📍 Delhi NCR</div>
+          <div class="card-price">₹1,200 <span>/ day (team of 3)</span></div>
+          <div class="card-footer">
+            <div class="poster-info"><div class="avatar">PG</div> Prakash &amp; Sons</div>
+            <button class="btn btn-primary btn-sm">View Details</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p><strong>BuildsUp</strong> — India's Construction Marketplace · Materials · Chemicals · Services · Labour</p>
+    <p style="margin-top:8px">© 2024 BuildsUp Technologies Pvt. Ltd.</p>
+  </footer>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN: BROWSE
+══════════════════════════════════════ -->
+<div id="screen-browse" class="screen">
+  <header class="header">
+    <div class="header-inner">
+      <a class="logo" onclick="showScreen('screen-home')"><span class="logo-icon">🏗️</span> BuildsUp</a>
+      <nav class="nav">
+        <a class="active" onclick="showScreen('screen-browse')">Browse Listings</a>
+        <a onclick="showScreen('screen-create')">Post a Listing</a>
+        <a onclick="showScreen('screen-messages')">Messages</a>
+      </nav>
+      <div class="header-actions">
+        <button class="btn btn-outline btn-sm" onclick="showScreen('screen-dashboard')">Dashboard</button>
+        <button class="btn btn-primary btn-sm" onclick="showScreen('screen-create')">+ Post Listing</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="browse-layout">
+    <div class="sidebar">
+      <div class="filter-group">
+        <input class="filter-input" type="text" placeholder="🔍 Search listings...">
+      </div>
+
+      <div class="filter-group">
+        <div class="sidebar-title">Category</div>
+        <label><input type="checkbox" checked> All Categories</label>
+        <label><input type="checkbox"> 🧱 Materials</label>
+        <label><input type="checkbox"> ⚗️ Chemicals</label>
+        <label><input type="checkbox"> 🔧 Services</label>
+        <label><input type="checkbox"> 👷 Labour</label>
+      </div>
+
+      <div class="filter-group">
+        <div class="sidebar-title">Listing Type</div>
+        <label><input type="radio" name="type" checked> All</label>
+        <label><input type="radio" name="type"> Availability</label>
+        <label><input type="radio" name="type"> Requirement</label>
+      </div>
+
+      <div class="filter-group">
+        <div class="sidebar-title">Location</div>
+        <input class="filter-input" type="text" placeholder="City or State">
+      </div>
+
+      <div class="filter-group">
+        <div class="sidebar-title">Price Range (₹)</div>
+        <div style="display:flex;gap:8px;margin-top:4px">
+          <input class="filter-input" type="number" placeholder="Min">
+          <input class="filter-input" type="number" placeholder="Max">
+        </div>
+      </div>
+
+      <button class="btn btn-primary w-full mt-16">Apply Filters</button>
+      <button class="btn btn-ghost w-full mt-8 text-sm">Clear All</button>
+    </div>
+
+    <div>
+      <div class="results-header">
+        <div class="results-count"><strong>245</strong> listings found</div>
+        <select class="sort-select">
+          <option>Sort: Newest First</option>
+          <option>Price: Low to High</option>
+          <option>Price: High to Low</option>
+        </select>
+      </div>
+
+      <div class="grid-3">
+
+        <div class="listing-card" onclick="showScreen('screen-detail')">
+          <div class="card-badges"><span class="badge badge-materials">Materials</span><span class="badge badge-availability">Availability</span></div>
+          <div class="card-title">TMT Steel Bars — Fe500, 16mm & 20mm</div>
+          <div class="card-meta">📍 Mumbai, MH</div>
+          <div class="card-price">₹62,500 <span>/ MT</span></div>
+          <div class="card-footer"><div class="poster-info"><div class="avatar">RK</div> Rajesh Kumar</div><button class="btn btn-primary btn-sm">View</button></div>
+        </div>
+
+        <div class="listing-card" onclick="showScreen('screen-detail')">
+          <div class="card-badges"><span class="badge badge-chemicals">Chemicals</span><span class="badge badge-availability">Availability</span></div>
+          <div class="card-title">Waterproofing Membrane — SBS Modified Bitumen</div>
+          <div class="card-meta">📍 Delhi NCR</div>
+          <div class="card-price">₹1,850 <span>/ roll</span></div>
+          <div class="card-footer"><div class="poster-info"><div class="avatar">DW</div> Delhi Waterworks</div><button class="btn btn-primary btn-sm">View</button></div>
+        </div>
+
+        <div class="listing-card" onclick="showScreen('screen-detail')">
+          <div class="card-badges"><span class="badge badge-services">Services</span><span class="badge badge-requirement">Requirement</span></div>
+          <div class="card-title">Soil Testing &amp; Geotechnical Survey Required</div>
+          <div class="card-meta">📍 Ahmedabad, GJ</div>
+          <div class="card-price">₹35,000 <span>/ project</span></div>
+          <div class="card-footer"><div class="poster-info"><div class="avatar">GP</div> G. Patel Infra</div><button class="btn btn-primary btn-sm">View</button></div>
+        </div>
+
+        <div class="listing-card" onclick="showScreen('screen-detail')">
+          <div class="card-badges"><span class="badge badge-labour">Labour</span><span class="badge badge-availability">Availability</span></div>
+          <div class="card-title">Mason &amp; Tile Workers — Team of 6 Available</div>
+          <div class="card-meta">📍 Bengaluru, KA</div>
+          <div class="card-price">₹4,800 <span>/ day (team)</span></div>
+          <div class="card-footer"><div class="poster-info"><div class="avatar">MS</div> Murali Suresh</div><button class="btn btn-primary btn-sm">View</button></div>
+        </div>
+
+        <div class="listing-card" onclick="showScreen('screen-detail')">
+          <div class="card-badges"><span class="badge badge-materials">Materials</span><span class="badge badge-availability">Availability</span></div>
+          <div class="card-title">River Sand — M-Sand &amp; River Sand Mixed Grade</div>
+          <div class="card-meta">📍 Pune, MH</div>
+          <div class="card-price">₹4,200 <span>/ load (8T)</span></div>
+          <div class="card-footer"><div class="poster-info"><div class="avatar">PS</div> Punit Sand</div><button class="btn btn-primary btn-sm">View</button></div>
+        </div>
+
+        <div class="listing-card" onclick="showScreen('screen-detail')">
+          <div class="card-badges"><span class="badge badge-chemicals">Chemicals</span><span class="badge badge-requirement">Requirement</span></div>
+          <div class="card-title">Concrete Admixture — Superplasticiser Required</div>
+          <div class="card-meta">📍 Hyderabad, TS</div>
+          <div class="card-price">₹95 <span>/ litre (500L/mo)</span></div>
+          <div class="card-footer"><div class="poster-info"><div class="avatar">KR</div> K. Reddy Builders</div><button class="btn btn-primary btn-sm">View</button></div>
+        </div>
+
+        <div class="listing-card" onclick="showScreen('screen-detail')">
+          <div class="card-badges"><span class="badge badge-services">Services</span><span class="badge badge-availability">Availability</span></div>
+          <div class="card-title">Crane Rental — 50T Crawler Crane Available</div>
+          <div class="card-meta">📍 Chennai, TN</div>
+          <div class="card-price">₹18,000 <span>/ day</span></div>
+          <div class="card-footer"><div class="poster-info"><div class="avatar">HC</div> Heavy Cranes Co.</div><button class="btn btn-primary btn-sm">View</button></div>
+        </div>
+
+        <div class="listing-card" onclick="showScreen('screen-detail')">
+          <div class="card-badges"><span class="badge badge-materials">Materials</span><span class="badge badge-requirement">Requirement</span></div>
+          <div class="card-title">AAC Blocks Required — 4-Inch, 200 Cu.m/month</div>
+          <div class="card-meta">📍 Kolkata, WB</div>
+          <div class="card-price">₹42 <span>/ block</span></div>
+          <div class="card-footer"><div class="poster-info"><div class="avatar">BH</div> Bengal Housing</div><button class="btn btn-primary btn-sm">View</button></div>
+        </div>
+
+        <div class="listing-card" onclick="showScreen('screen-detail')">
+          <div class="card-badges"><span class="badge badge-labour">Labour</span><span class="badge badge-requirement">Requirement</span></div>
+          <div class="card-title">Welders Required — Pipeline &amp; Structural Work</div>
+          <div class="card-meta">📍 Jamshedpur, JH</div>
+          <div class="card-price">₹1,100 <span>/ day</span></div>
+          <div class="card-footer"><div class="poster-info"><div class="avatar">SI</div> Steel India Ltd.</div><button class="btn btn-primary btn-sm">View</button></div>
+        </div>
+
+      </div>
+
+      <div style="display:flex;justify-content:center;gap:6px;margin-top:32px">
+        <button class="btn btn-primary btn-sm">1</button>
+        <button class="btn btn-outline btn-sm">2</button>
+        <button class="btn btn-outline btn-sm">3</button>
+        <button class="btn btn-outline btn-sm">→</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN: LISTING DETAIL
+══════════════════════════════════════ -->
+<div id="screen-detail" class="screen">
+  <header class="header">
+    <div class="header-inner">
+      <a class="logo" onclick="showScreen('screen-home')"><span class="logo-icon">🏗️</span> BuildsUp</a>
+      <nav class="nav">
+        <a onclick="showScreen('screen-browse')">Browse Listings</a>
+        <a onclick="showScreen('screen-create')">Post a Listing</a>
+        <a onclick="showScreen('screen-messages')">Messages</a>
+      </nav>
+      <div class="header-actions">
+        <button class="btn btn-outline btn-sm" onclick="showScreen('screen-dashboard')">Dashboard</button>
+        <button class="btn btn-primary btn-sm" onclick="showScreen('screen-create')">+ Post Listing</button>
+      </div>
+    </div>
+  </header>
+  <div class="container">
+    <div class="breadcrumb">
+      <a onclick="showScreen('screen-home')">Home</a><span>›</span>
+      <a onclick="showScreen('screen-browse')">Browse</a><span>›</span>
+      <span style="color:var(--slate-700)">TMT Steel Bars — Fe500 Grade</span>
+    </div>
+    <div class="detail-layout">
+      <div>
+        <div class="image-gallery">🏗️</div>
+        <div class="thumb-row">
+          <div class="thumb active">🏗️</div>
+          <div class="thumb">📦</div>
+          <div class="thumb">📏</div>
+          <div class="thumb">✅</div>
+        </div>
+
+        <div class="detail-title">TMT Steel Bars — Fe500 Grade, 16mm &amp; 20mm Dia</div>
+        <div class="card-badges" style="margin-bottom:16px">
+          <span class="badge badge-materials">Materials</span>
+          <span class="badge badge-availability">Availability</span>
+        </div>
+        <p style="font-size:15px;color:var(--slate-600);line-height:1.7">High-quality Fe500 grade TMT bars manufactured by JSW Steel, available in 16mm and 20mm diameters. Full traceability with mill test certificates. Ideal for residential and commercial structural construction. Minimum order 10 MT. PAN India delivery available via contract carriage.</p>
+
+        <table class="spec-table">
+          <tr><td>Grade</td><td>Fe500 (IS 1786:2008)</td></tr>
+          <tr><td>Diameter</td><td>16mm, 20mm</td></tr>
+          <tr><td>Quantity Available</td><td>250 MT</td></tr>
+          <tr><td>Length</td><td>12 metres (standard)</td></tr>
+          <tr><td>Manufacturer</td><td>JSW Steel Ltd.</td></tr>
+          <tr><td>Location</td><td>Mumbai, Maharashtra</td></tr>
+          <tr><td>Delivery</td><td>PAN India, 5–7 working days</td></tr>
+        </table>
+      </div>
+
+      <div>
+        <div class="price-card">
+          <div style="font-size:13px;color:var(--slate-500);margin-bottom:4px">Price per Metric Tonne</div>
+          <div class="price-big">₹62,500 <span class="price-unit">/ MT</span></div>
+          <div style="font-size:12px;color:var(--green);margin-top:4px">● In stock — 250 MT available</div>
+          <hr class="divider">
+          <button class="btn btn-primary w-full" onclick="showScreen('screen-messages')" style="padding:13px;font-size:15px;border-radius:8px">Send Enquiry</button>
+          <button class="btn btn-outline w-full mt-8" style="padding:13px;font-size:14px;border-radius:8px">💾 Save Listing</button>
+          <hr class="divider">
+          <div class="seller-card">
+            <div class="avatar avatar-lg">RK</div>
+            <div class="seller-info">
+              <div class="seller-name">Rajesh Kumar</div>
+              <div class="seller-meta">Member since Jan 2023 · ⭐ 4.8</div>
+              <div class="seller-meta" style="margin-top:2px">📞 Response within 2 hrs</div>
+            </div>
+          </div>
+          <button class="btn btn-outline w-full" style="font-size:13px">View Seller Profile</button>
+          <hr class="divider">
+          <div style="font-size:12px;color:var(--slate-500)">✅ PAN Verified &nbsp;·&nbsp; ✅ GST Registered<br>📦 95% on-time delivery rate</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="padding-bottom:48px">
+      <h3 style="font-size:18px;font-weight:700;margin-bottom:20px">Similar Listings</h3>
+      <div class="similar-row">
+        <div class="listing-card" onclick="showScreen('screen-detail')">
+          <div class="card-badges"><span class="badge badge-materials">Materials</span><span class="badge badge-availability">Availability</span></div>
+          <div class="card-title">MS Plates — IS 2062 Grade A, 6mm–20mm</div>
+          <div class="card-meta">📍 Surat, GJ</div>
+          <div class="card-price">₹71,000 <span>/ MT</span></div>
+        </div>
+        <div class="listing-card" onclick="showScreen('screen-detail')">
+          <div class="card-badges"><span class="badge badge-materials">Materials</span><span class="badge badge-availability">Availability</span></div>
+          <div class="card-title">Galvanised Wire Mesh — Various Sizes in Stock</div>
+          <div class="card-meta">📍 Kolkata, WB</div>
+          <div class="card-price">₹8,500 <span>/ roll</span></div>
+        </div>
+        <div class="listing-card" onclick="showScreen('screen-detail')">
+          <div class="card-badges"><span class="badge badge-materials">Materials</span><span class="badge badge-requirement">Requirement</span></div>
+          <div class="card-title">Steel Angle &amp; Channel Required — 50MT/month</div>
+          <div class="card-meta">📍 Nagpur, MH</div>
+          <div class="card-price">₹58,000 <span>/ MT</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN: LOGIN
+══════════════════════════════════════ -->
+<div id="screen-login" class="screen">
+  <header class="header">
+    <div class="header-inner">
+      <a class="logo" onclick="showScreen('screen-home')"><span class="logo-icon">🏗️</span> BuildsUp</a>
+    </div>
+  </header>
+  <div class="auth-card">
+    <div class="auth-logo"><div class="logo">🏗️ BuildsUp</div></div>
+    <div class="auth-title">Welcome back</div>
+    <div class="auth-sub">Sign in to your account</div>
+    <div class="form-group">
+      <label class="form-label">Email address</label>
+      <input class="form-input" type="email" placeholder="you@example.com">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input class="form-input" type="password" placeholder="Your password">
+    </div>
+    <a class="forgot-link">Forgot your password?</a>
+    <button class="btn btn-primary w-full" style="padding:13px;font-size:15px;border-radius:8px" onclick="showScreen('screen-dashboard')">Sign In</button>
+    <div class="or-divider">or</div>
+    <div class="auth-link">Don't have an account? <a onclick="showScreen('screen-register')">Sign up for free</a></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN: REGISTER
+══════════════════════════════════════ -->
+<div id="screen-register" class="screen">
+  <header class="header">
+    <div class="header-inner">
+      <a class="logo" onclick="showScreen('screen-home')"><span class="logo-icon">🏗️</span> BuildsUp</a>
+    </div>
+  </header>
+  <div class="auth-card" style="max-width:480px">
+    <div class="auth-logo"><div class="logo">🏗️ BuildsUp</div></div>
+    <div class="auth-title">Create your account</div>
+    <div class="auth-sub">Join thousands of construction professionals</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">First Name</label><input class="form-input" placeholder="Rahul"></div>
+      <div class="form-group"><label class="form-label">Last Name</label><input class="form-input" placeholder="Sharma"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Email address</label><input class="form-input" type="email" placeholder="you@company.com"></div>
+    <div class="form-group"><label class="form-label">Phone Number</label><input class="form-input" type="tel" placeholder="+91 98765 43210"></div>
+    <div class="form-group"><label class="form-label">Password</label><input class="form-input" type="password" placeholder="Min. 8 characters"></div>
+    <div class="form-group">
+      <label class="form-label">I want to</label>
+      <div class="role-grid">
+        <div class="role-option" onclick="selectRole(this)">Buy</div>
+        <div class="role-option selected" onclick="selectRole(this)">Sell</div>
+        <div class="role-option" onclick="selectRole(this)">Both</div>
+      </div>
+    </div>
+    <div class="checkbox-row mt-8"><input type="checkbox" checked><span>I agree to the <a style="color:var(--amber-dark);cursor:pointer">Terms of Service</a> and <a style="color:var(--amber-dark);cursor:pointer">Privacy Policy</a></span></div>
+    <button class="btn btn-primary w-full mt-16" style="padding:13px;font-size:15px;border-radius:8px" onclick="showScreen('screen-dashboard')">Create Account</button>
+    <div class="auth-link mt-12">Already have an account? <a onclick="showScreen('screen-login')">Sign in</a></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN: DASHBOARD
+══════════════════════════════════════ -->
+<div id="screen-dashboard" class="screen">
+  <header class="header">
+    <div class="header-inner">
+      <a class="logo" onclick="showScreen('screen-home')"><span class="logo-icon">🏗️</span> BuildsUp</a>
+      <nav class="nav">
+        <a onclick="showScreen('screen-browse')">Browse</a>
+      </nav>
+      <div class="header-actions">
+        <button class="btn btn-primary btn-sm" onclick="showScreen('screen-create')">+ Post Listing</button>
+      </div>
+    </div>
+  </header>
+  <div class="dash-layout">
+    <div class="dash-sidebar">
+      <div class="dash-user">
+        <div class="avatar" style="width:60px;height:60px;font-size:22px;margin:0 auto 10px">RK</div>
+        <div class="dash-user-name">Rajesh Kumar</div>
+        <div class="dash-user-email">rajesh@example.com</div>
+      </div>
+      <div class="dash-nav">
+        <a class="active" onclick="showScreen('screen-dashboard')"><span class="icon">📋</span> My Listings</a>
+        <a onclick="showScreen('screen-create')"><span class="icon">➕</span> Post Listing</a>
+        <a onclick="showScreen('screen-messages')"><span class="icon">💬</span> Messages <span class="unread-badge" style="margin-left:auto">3</span></a>
+        <a onclick="showScreen('screen-dashboard')"><span class="icon">🔖</span> Saved</a>
+        <a onclick="showScreen('screen-dashboard')"><span class="icon">👤</span> Profile</a>
+        <hr style="border:none;border-top:1px solid var(--slate-100);margin:8px 0">
+        <a onclick="showScreen('screen-home')" style="color:var(--red)"><span class="icon">🚪</span> Sign Out</a>
+      </div>
+    </div>
+    <div class="dash-content">
+      <div class="dash-header">
+        <div class="dash-title">My Listings</div>
+        <button class="btn btn-primary" onclick="showScreen('screen-create')">+ Post New Listing</button>
+      </div>
+      <div class="tab-bar">
+        <div class="tab-item active">All (5)</div>
+        <div class="tab-item">Active (4)</div>
+        <div class="tab-item">Inactive (1)</div>
+      </div>
+
+      <div class="listing-row">
+        <div class="status-dot active"></div>
+        <div style="flex:1">
+          <div class="listing-row-title">TMT Steel Bars — Fe500, 16mm &amp; 20mm</div>
+          <div class="listing-row-meta"><span class="badge badge-materials" style="font-size:11px;padding:2px 8px">Materials</span> &nbsp;·&nbsp; Mumbai &nbsp;·&nbsp; ₹62,500/MT &nbsp;·&nbsp; Posted 3 days ago</div>
+        </div>
+        <div class="listing-row-actions">
+          <button class="btn btn-outline btn-sm" onclick="showScreen('screen-create')">Edit</button>
+          <button class="btn btn-outline btn-sm">Deactivate</button>
+          <button class="btn btn-danger btn-sm">Delete</button>
+        </div>
+      </div>
+
+      <div class="listing-row">
+        <div class="status-dot active"></div>
+        <div style="flex:1">
+          <div class="listing-row-title">MS Plates — IS 2062, 6mm to 20mm</div>
+          <div class="listing-row-meta"><span class="badge badge-materials" style="font-size:11px;padding:2px 8px">Materials</span> &nbsp;·&nbsp; Mumbai &nbsp;·&nbsp; ₹71,000/MT &nbsp;·&nbsp; Posted 1 week ago</div>
+        </div>
+        <div class="listing-row-actions">
+          <button class="btn btn-outline btn-sm" onclick="showScreen('screen-create')">Edit</button>
+          <button class="btn btn-outline btn-sm">Deactivate</button>
+          <button class="btn btn-danger btn-sm">Delete</button>
+        </div>
+      </div>
+
+      <div class="listing-row">
+        <div class="status-dot active"></div>
+        <div style="flex:1">
+          <div class="listing-row-title">Structural Steel Fabrication Service Available</div>
+          <div class="listing-row-meta"><span class="badge badge-services" style="font-size:11px;padding:2px 8px">Services</span> &nbsp;·&nbsp; Mumbai &nbsp;·&nbsp; ₹850/kg &nbsp;·&nbsp; Posted 2 weeks ago</div>
+        </div>
+        <div class="listing-row-actions">
+          <button class="btn btn-outline btn-sm" onclick="showScreen('screen-create')">Edit</button>
+          <button class="btn btn-outline btn-sm">Deactivate</button>
+          <button class="btn btn-danger btn-sm">Delete</button>
+        </div>
+      </div>
+
+      <div class="listing-row">
+        <div class="status-dot active"></div>
+        <div style="flex:1">
+          <div class="listing-row-title">GI Corrugated Sheets — 0.4mm to 0.6mm</div>
+          <div class="listing-row-meta"><span class="badge badge-materials" style="font-size:11px;padding:2px 8px">Materials</span> &nbsp;·&nbsp; Mumbai &nbsp;·&nbsp; ₹42/sqft &nbsp;·&nbsp; Posted 3 weeks ago</div>
+        </div>
+        <div class="listing-row-actions">
+          <button class="btn btn-outline btn-sm" onclick="showScreen('screen-create')">Edit</button>
+          <button class="btn btn-outline btn-sm">Deactivate</button>
+          <button class="btn btn-danger btn-sm">Delete</button>
+        </div>
+      </div>
+
+      <div class="listing-row" style="opacity:0.6">
+        <div class="status-dot inactive"></div>
+        <div style="flex:1">
+          <div class="listing-row-title">Steel Wire Rope — 6×19 FC, Various Sizes</div>
+          <div class="listing-row-meta"><span class="badge badge-materials" style="font-size:11px;padding:2px 8px">Materials</span> &nbsp;·&nbsp; Mumbai &nbsp;·&nbsp; Inactive &nbsp;·&nbsp; Posted 2 months ago</div>
+        </div>
+        <div class="listing-row-actions">
+          <button class="btn btn-outline btn-sm" onclick="showScreen('screen-create')">Edit</button>
+          <button class="btn btn-primary btn-sm">Activate</button>
+          <button class="btn btn-danger btn-sm">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN: CREATE LISTING
+══════════════════════════════════════ -->
+<div id="screen-create" class="screen">
+  <header class="header">
+    <div class="header-inner">
+      <a class="logo" onclick="showScreen('screen-home')"><span class="logo-icon">🏗️</span> BuildsUp</a>
+      <div class="header-actions">
+        <button class="btn btn-outline btn-sm" onclick="showScreen('screen-dashboard')">← Back to Dashboard</button>
+      </div>
+    </div>
+  </header>
+  <div class="dash-layout">
+    <div class="dash-sidebar">
+      <div class="dash-user">
+        <div class="avatar" style="width:60px;height:60px;font-size:22px;margin:0 auto 10px">RK</div>
+        <div class="dash-user-name">Rajesh Kumar</div>
+        <div class="dash-user-email">rajesh@example.com</div>
+      </div>
+      <div class="dash-nav">
+        <a onclick="showScreen('screen-dashboard')"><span class="icon">📋</span> My Listings</a>
+        <a class="active" onclick="showScreen('screen-create')"><span class="icon">➕</span> Post Listing</a>
+        <a onclick="showScreen('screen-messages')"><span class="icon">💬</span> Messages</a>
+        <a><span class="icon">🔖</span> Saved</a>
+        <a><span class="icon">👤</span> Profile</a>
+        <hr style="border:none;border-top:1px solid var(--slate-100);margin:8px 0">
+        <a onclick="showScreen('screen-home')" style="color:var(--red)"><span class="icon">🚪</span> Sign Out</a>
+      </div>
+    </div>
+    <div class="dash-content">
+      <div class="dash-header">
+        <div class="dash-title">Post a New Listing</div>
+      </div>
+      <div class="create-form">
+        <div class="form-section">
+          <div class="form-section-title">Basic Information</div>
+          <div class="form-group"><label class="form-label">Listing Title *</label><input class="form-input" placeholder="e.g. TMT Steel Bars Fe500 — 16mm & 20mm Available in Mumbai"></div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Category *</label>
+              <select class="form-select">
+                <option>Select category</option>
+                <option>🧱 Materials</option>
+                <option>⚗️ Chemicals</option>
+                <option>🔧 Services</option>
+                <option>👷 Labour</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Listing Type *</label>
+              <div class="type-toggle">
+                <button class="type-toggle-btn active" onclick="toggleType(this)">📦 Availability</button>
+                <button class="type-toggle-btn" onclick="toggleType(this)">🔍 Requirement</button>
+              </div>
+              <div class="form-hint">Availability = I have this · Requirement = I need this</div>
+            </div>
+          </div>
+          <div class="form-group"><label class="form-label">Description *</label><textarea class="form-textarea" placeholder="Describe what you're offering or looking for. Include grade, standards, delivery terms, etc."></textarea></div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">Pricing & Quantity</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Price</label>
+              <div class="price-input-group">
+                <select><option>₹</option><option>$</option><option>€</option></select>
+                <input type="number" placeholder="0.00">
+              </div>
+            </div>
+            <div class="form-group"><label class="form-label">Unit</label><input class="form-input" placeholder="e.g. per MT, per bag, per day"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Quantity Available</label><input class="form-input" placeholder="e.g. 250"></div>
+            <div class="form-group"><label class="form-label">Minimum Order Qty</label><input class="form-input" placeholder="e.g. 10 MT"></div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">Location & Delivery</div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">City *</label><input class="form-input" placeholder="Mumbai"></div>
+            <div class="form-group"><label class="form-label">State *</label><select class="form-select"><option>Maharashtra</option><option>Karnataka</option><option>Tamil Nadu</option><option>Delhi</option></select></div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">Photos</div>
+          <div class="upload-area">
+            <div class="upload-icon">📷</div>
+            <div class="upload-text"><strong>Click to upload</strong> or drag and drop photos here</div>
+            <div style="font-size:12px;color:var(--slate-400);margin-top:6px">PNG, JPG up to 5MB · Max 8 photos</div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:12px;justify-content:flex-end">
+          <button class="btn btn-outline" onclick="showScreen('screen-dashboard')">Cancel</button>
+          <button class="btn btn-outline">Preview</button>
+          <button class="btn btn-primary" style="padding:10px 28px" onclick="showScreen('screen-dashboard')">🚀 Post Listing</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN: MESSAGES
+══════════════════════════════════════ -->
+<div id="screen-messages" class="screen">
+  <header class="header">
+    <div class="header-inner">
+      <a class="logo" onclick="showScreen('screen-home')"><span class="logo-icon">🏗️</span> BuildsUp</a>
+      <div class="header-actions">
+        <button class="btn btn-outline btn-sm" onclick="showScreen('screen-dashboard')">Dashboard</button>
+      </div>
+    </div>
+  </header>
+  <div class="messages-layout">
+    <div class="thread-list">
+      <div class="thread-search">
+        <input class="filter-input" type="text" placeholder="🔍 Search conversations...">
+      </div>
+
+      <div class="thread-item active">
+        <div class="avatar">AM</div>
+        <div class="thread-content">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="thread-name">Arjun Mehta</div>
+            <div class="thread-time">2m ago</div>
+          </div>
+          <div class="thread-listing">TMT Steel Bars — Fe500</div>
+          <div class="thread-preview">Do you deliver to Bengaluru? We need...</div>
+        </div>
+        <span class="unread-badge">2</span>
+      </div>
+
+      <div class="thread-item">
+        <div class="avatar">NR</div>
+        <div class="thread-content">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="thread-name">Nandini Realtors</div>
+            <div class="thread-time">1h ago</div>
+          </div>
+          <div class="thread-listing">MS Plates — IS 2062</div>
+          <div class="thread-preview">Thank you, we'll place the order today</div>
+        </div>
+      </div>
+
+      <div class="thread-item">
+        <div class="avatar">SP</div>
+        <div class="thread-content">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="thread-name">Sanjay Parekh</div>
+            <div class="thread-time">Yesterday</div>
+          </div>
+          <div class="thread-listing">Steel Wire Rope</div>
+          <div class="thread-preview">Can you provide test certificates?</div>
+        </div>
+        <span class="unread-badge">1</span>
+      </div>
+
+      <div class="thread-item">
+        <div class="avatar">GP</div>
+        <div class="thread-content">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="thread-name">G. Patel Infra</div>
+            <div class="thread-time">2 days ago</div>
+          </div>
+          <div class="thread-listing">Structural Steel Fabrication</div>
+          <div class="thread-preview">Please share your project capacity for Q3</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-area">
+      <div class="chat-header">
+        <div class="avatar">AM</div>
+        <div class="chat-header-info">
+          <div class="chat-header-name">Arjun Mehta</div>
+          <div class="chat-header-sub">Re: TMT Steel Bars — Fe500 Grade · Bengaluru, KA</div>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="showScreen('screen-detail')">View Listing →</button>
+      </div>
+      <div class="chat-messages">
+        <div class="msg-bubble received">
+          <div class="msg-text">Hello! I saw your listing for TMT Steel Bars on BuildsUp. We're working on a residential project in Bengaluru and need approximately 80 MT of Fe500 grade bars (16mm). Is this quantity available?</div>
+          <div class="msg-time">Mon, 10:32 AM</div>
+        </div>
+        <div class="msg-bubble sent">
+          <div class="msg-text">Hi Arjun! Yes, we have 250 MT in stock right now. 80 MT is no problem. Do you need delivery to Bengaluru or will you be arranging your own transport?</div>
+          <div class="msg-time">Mon, 10:45 AM</div>
+        </div>
+        <div class="msg-bubble received">
+          <div class="msg-text">We'd prefer delivery to the site. Can you share delivery charges to Bengaluru? Also, do you have mill test certificates for the current stock?</div>
+          <div class="msg-time">Mon, 11:02 AM</div>
+        </div>
+        <div class="msg-bubble sent">
+          <div class="msg-text">Yes, we have full MTC documentation from JSW Steel. Delivery to Bengaluru typically adds ₹2,200–₹2,500 per MT depending on the exact destination. Lead time is 5–7 working days. Shall I send a formal quotation?</div>
+          <div class="msg-time">Mon, 11:18 AM</div>
+        </div>
+        <div class="msg-bubble received">
+          <div class="msg-text">Do you deliver to Bengaluru? We need at least 80 MT by end of this month. Please confirm availability and send a quote with GST.</div>
+          <div class="msg-time">Today, 9:14 AM</div>
+        </div>
+      </div>
+      <div class="chat-input">
+        <input type="text" placeholder="Type a message...">
+        <button class="btn-send">➤</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const el = document.getElementById(id);
+    if (el) { el.classList.add('active'); window.scrollTo(0,0); }
+  }
+  function selectRole(el) {
+    el.closest('.role-grid').querySelectorAll('.role-option').forEach(r => r.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+  function toggleType(el) {
+    el.closest('.type-toggle').querySelectorAll('.type-toggle-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BuildsUp — Mobile App Prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --amber: #F59E0B; --amber-dark: #D97706; --amber-light: #FEF3C7;
+    --slate-900: #1E293B; --slate-700: #334155; --slate-600: #475569;
+    --slate-500: #64748B; --slate-400: #94A3B8; --slate-300: #CBD5E1;
+    --slate-200: #E2E8F0; --slate-100: #F1F5F9; --slate-50: #F8FAFC;
+    --white: #fff; --green: #10B981; --red: #EF4444;
+    --cat-materials: #3B82F6; --cat-chemicals: #8B5CF6;
+    --cat-services: #10B981; --cat-labour: #F97316;
+    --radius: 12px; --radius-sm: 8px; --radius-full: 100px;
+  }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #1a1a2e;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+
+  /* ── PHONE FRAME ── */
+  .phone-wrap { position: relative; }
+  .phone-label {
+    text-align: center;
+    color: rgba(255,255,255,0.5);
+    font-size: 13px;
+    margin-bottom: 16px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .phone {
+    width: 375px;
+    height: 812px;
+    background: var(--slate-100);
+    border-radius: 48px;
+    overflow: hidden;
+    position: relative;
+    box-shadow:
+      0 0 0 2px #2a2a2a,
+      0 0 0 6px #1a1a1a,
+      0 40px 80px rgba(0,0,0,0.6),
+      inset 0 0 0 1px rgba(255,255,255,0.08);
+    display: flex;
+    flex-direction: column;
+  }
+  /* Physical buttons */
+  .phone::before {
+    content: '';
+    position: absolute;
+    left: -8px; top: 120px;
+    width: 4px; height: 32px;
+    background: #1a1a1a;
+    border-radius: 2px 0 0 2px;
+    box-shadow: 0 44px 0 #1a1a1a, 0 88px 0 #1a1a1a;
+  }
+  .phone::after {
+    content: '';
+    position: absolute;
+    right: -8px; top: 150px;
+    width: 4px; height: 60px;
+    background: #1a1a1a;
+    border-radius: 0 2px 2px 0;
+  }
+
+  /* ── STATUS BAR ── */
+  .status-bar {
+    background: var(--white);
+    padding: 12px 24px 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+  }
+  .status-bar.dark { background: var(--slate-900); }
+  .status-bar.amber-bg { background: var(--amber); }
+  .status-time { font-size: 15px; font-weight: 700; color: var(--slate-900); }
+  .status-time.light { color: var(--white); }
+  .status-icons { display: flex; gap: 5px; align-items: center; font-size: 12px; color: var(--slate-600); }
+  .status-icons.light { color: rgba(255,255,255,0.9); }
+  .notch {
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 120px; height: 28px;
+    background: #1a1a1a;
+    border-radius: 0 0 20px 20px;
+    z-index: 20;
+  }
+
+  /* ── CONTENT AREA ── */
+  .phone-content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: var(--slate-100);
+    scrollbar-width: none;
+    position: relative;
+  }
+  .phone-content::-webkit-scrollbar { display: none; }
+
+  /* ── HOME INDICATOR ── */
+  .home-indicator {
+    background: var(--white);
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .home-bar {
+    width: 130px; height: 5px;
+    background: var(--slate-300);
+    border-radius: 3px;
+  }
+
+  /* ── TAB BAR ── */
+  .tab-bar {
+    background: var(--white);
+    border-top: 1px solid var(--slate-200);
+    display: flex;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+  }
+  .tab-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 0 4px;
+    cursor: pointer;
+    gap: 3px;
+  }
+  .tab-icon { font-size: 22px; line-height: 1; position: relative; }
+  .tab-label { font-size: 10px; font-weight: 500; color: var(--slate-400); }
+  .tab-item.active .tab-label { color: var(--amber); }
+  .tab-item.active .tab-icon { filter: drop-shadow(0 0 4px rgba(245,158,11,0.4)); }
+  .tab-badge {
+    position: absolute;
+    top: -4px; right: -8px;
+    background: var(--red);
+    color: var(--white);
+    font-size: 9px;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 10px;
+    line-height: 1.4;
+  }
+  .tab-post .tab-icon-wrap {
+    width: 48px; height: 48px;
+    background: var(--amber);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    margin-top: -20px;
+    box-shadow: 0 4px 12px rgba(245,158,11,0.4);
+    border: 3px solid var(--white);
+  }
+
+  /* ── SCREENS ── */
+  .screen { display: none; }
+  .screen.active { display: block; min-height: 100%; }
+
+  /* ── COMMON COMPONENTS ── */
+  .screen-header {
+    background: var(--white);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--slate-100);
+    position: sticky; top: 0; z-index: 5;
+  }
+  .back-btn { font-size: 20px; cursor: pointer; width: 32px; }
+  .screen-title { font-size: 17px; font-weight: 700; flex: 1; }
+  .header-action { font-size: 20px; cursor: pointer; }
+
+  .badge { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .badge-materials { background: #EFF6FF; color: var(--cat-materials); }
+  .badge-chemicals { background: #F5F3FF; color: var(--cat-chemicals); }
+  .badge-services { background: #ECFDF5; color: var(--cat-services); }
+  .badge-labour { background: #FFF7ED; color: var(--cat-labour); }
+  .badge-availability { background: #ECFDF5; color: var(--green); }
+  .badge-requirement { background: #FFF7ED; color: #EA580C; }
+
+  .btn { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 13px 20px; border-radius: var(--radius-full); font-size: 15px; font-weight: 600; cursor: pointer; border: none; font-family: 'Inter', sans-serif; }
+  .btn-primary { background: var(--amber); color: var(--white); }
+  .btn-outline { background: transparent; color: var(--slate-700); border: 1.5px solid var(--slate-300); }
+  .btn-sm { padding: 8px 16px; font-size: 13px; }
+  .btn-full { width: 100%; }
+
+  .card { background: var(--white); border-radius: var(--radius); overflow: hidden; }
+  .shadow-sm { box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04); }
+
+  .avatar { border-radius: 50%; background: var(--amber-light); display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--amber-dark); flex-shrink: 0; }
+  .avatar-sm { width: 36px; height: 36px; font-size: 13px; }
+  .avatar-md { width: 44px; height: 44px; font-size: 16px; }
+  .avatar-lg { width: 72px; height: 72px; font-size: 26px; }
+
+  .input-field {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1.5px solid var(--slate-200);
+    border-radius: var(--radius-sm);
+    font-size: 15px;
+    font-family: 'Inter', sans-serif;
+    color: var(--slate-900);
+    background: var(--white);
+    outline: none;
+  }
+  .input-field:focus { border-color: var(--amber); }
+  .input-label { font-size: 13px; font-weight: 600; color: var(--slate-700); margin-bottom: 6px; display: block; }
+
+  /* category left-border */
+  .cat-border-materials { border-left: 4px solid var(--cat-materials); }
+  .cat-border-chemicals { border-left: 4px solid var(--cat-chemicals); }
+  .cat-border-services { border-left: 4px solid var(--cat-services); }
+  .cat-border-labour { border-left: 4px solid var(--cat-labour); }
+
+  /* ──────────────── SIGN IN ──────────────── */
+  #screen-signin {
+    background: var(--white);
+    min-height: 100%;
+    padding: 0 24px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0;
+  }
+  .signin-logo { text-align: center; padding: 40px 0 32px; }
+  .signin-logo-icon { font-size: 56px; margin-bottom: 12px; }
+  .signin-logo-name { font-size: 28px; font-weight: 800; color: var(--slate-900); }
+  .signin-tagline { font-size: 14px; color: var(--slate-500); margin-top: 4px; }
+  .form-gap { display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; }
+  .forgot-link { text-align: right; font-size: 13px; color: var(--amber-dark); font-weight: 500; cursor: pointer; margin-bottom: 24px; }
+  .auth-alt { text-align: center; font-size: 14px; color: var(--slate-500); margin-top: 20px; }
+  .auth-alt a { color: var(--amber-dark); font-weight: 600; cursor: pointer; }
+
+  /* ──────────────── HOME ──────────────── */
+  #screen-home { background: var(--slate-100); }
+  .home-hero {
+    background: linear-gradient(135deg, var(--slate-900) 0%, #1E3A5F 100%);
+    padding: 20px 20px 28px;
+  }
+  .home-greeting { font-size: 13px; color: rgba(255,255,255,0.6); margin-bottom: 4px; }
+  .home-name { font-size: 20px; font-weight: 700; color: var(--white); margin-bottom: 16px; }
+  .search-bar {
+    background: rgba(255,255,255,0.12);
+    border: 1.5px solid rgba(255,255,255,0.15);
+    border-radius: var(--radius-full);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    color: rgba(255,255,255,0.6);
+    font-size: 14px;
+  }
+  .search-bar input { background: none; border: none; outline: none; color: rgba(255,255,255,0.9); font-family: 'Inter', sans-serif; font-size: 14px; flex: 1; }
+  .search-bar input::placeholder { color: rgba(255,255,255,0.5); }
+  .home-section { padding: 20px 20px 0; }
+  .home-section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .home-section-title { font-size: 15px; font-weight: 700; color: var(--slate-900); }
+  .see-all { font-size: 13px; color: var(--amber-dark); font-weight: 600; cursor: pointer; }
+  .cats-scroll { display: flex; gap: 10px; padding: 0 20px; overflow-x: auto; scrollbar-width: none; margin-top: 16px; padding-bottom: 4px; }
+  .cats-scroll::-webkit-scrollbar { display: none; }
+  .cat-chip {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .cat-chip-icon {
+    width: 56px; height: 56px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+  }
+  .cat-chip-label { font-size: 11px; font-weight: 600; color: var(--slate-600); }
+  .cat-materials .cat-chip-icon { background: #EFF6FF; }
+  .cat-chemicals .cat-chip-icon { background: #F5F3FF; }
+  .cat-services .cat-chip-icon { background: #ECFDF5; }
+  .cat-labour .cat-chip-icon { background: #FFF7ED; }
+  .h-scroll { display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none; padding: 0 20px 4px; }
+  .h-scroll::-webkit-scrollbar { display: none; }
+  .listing-hcard {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 14px;
+    width: 200px;
+    flex-shrink: 0;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    cursor: pointer;
+  }
+  .listing-hcard-title { font-size: 13px; font-weight: 600; color: var(--slate-900); line-height: 1.4; margin: 8px 0 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .listing-hcard-loc { font-size: 11px; color: var(--slate-500); }
+  .listing-hcard-price { font-size: 14px; font-weight: 700; color: var(--slate-900); margin-top: 8px; }
+  .listing-hcard-price span { font-size: 11px; font-weight: 400; color: var(--slate-500); }
+
+  /* ──────────────── BROWSE ──────────────── */
+  #screen-browse { background: var(--slate-100); }
+  .browse-searchbar {
+    background: var(--white);
+    padding: 12px 16px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    border-bottom: 1px solid var(--slate-100);
+    position: sticky; top: 0; z-index: 5;
+  }
+  .browse-input {
+    flex: 1;
+    background: var(--slate-100);
+    border: none;
+    border-radius: var(--radius-full);
+    padding: 10px 16px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+  }
+  .filter-btn {
+    width: 40px; height: 40px;
+    background: var(--amber-light);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    cursor: pointer;
+    border: none;
+    flex-shrink: 0;
+  }
+  .filter-chips { display: flex; gap: 8px; padding: 12px 16px; overflow-x: auto; scrollbar-width: none; background: var(--white); border-bottom: 1px solid var(--slate-100); }
+  .filter-chips::-webkit-scrollbar { display: none; }
+  .filter-chip { flex-shrink: 0; padding: 6px 14px; border-radius: var(--radius-full); font-size: 12px; font-weight: 600; border: 1.5px solid var(--slate-200); background: var(--white); color: var(--slate-600); cursor: pointer; }
+  .filter-chip.active { background: var(--amber); border-color: var(--amber); color: var(--white); }
+  .browse-count { padding: 12px 16px 6px; font-size: 13px; color: var(--slate-500); }
+  .browse-count strong { color: var(--slate-900); }
+  .listing-vcard {
+    background: var(--white);
+    margin: 0 12px 10px;
+    border-radius: var(--radius);
+    padding: 14px 14px 14px 16px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    cursor: pointer;
+  }
+  .vcard-body { flex: 1; min-width: 0; }
+  .vcard-title { font-size: 14px; font-weight: 600; color: var(--slate-900); margin-bottom: 6px; line-height: 1.4; }
+  .vcard-meta { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--slate-500); flex-wrap: wrap; margin-bottom: 8px; }
+  .vcard-price { font-size: 15px; font-weight: 700; color: var(--slate-900); }
+  .vcard-price span { font-size: 11px; font-weight: 400; color: var(--slate-500); }
+  .vcard-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--slate-50); }
+
+  /* ──────────────── DETAIL ──────────────── */
+  #screen-detail { background: var(--white); }
+  .detail-hero { background: var(--slate-100); height: 220px; display: flex; align-items: center; justify-content: center; font-size: 72px; }
+  .detail-body { padding: 20px; }
+  .detail-title { font-size: 18px; font-weight: 800; color: var(--slate-900); margin: 12px 0 10px; line-height: 1.3; }
+  .detail-price { font-size: 24px; font-weight: 800; color: var(--slate-900); }
+  .detail-price span { font-size: 14px; font-weight: 400; color: var(--slate-500); }
+  .detail-specs { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
+  .spec-pill { background: var(--slate-100); border-radius: var(--radius-full); padding: 6px 12px; font-size: 12px; font-weight: 500; color: var(--slate-700); display: flex; align-items: center; gap: 4px; }
+  .detail-desc { font-size: 14px; color: var(--slate-600); line-height: 1.7; margin-bottom: 20px; }
+  .poster-card { background: var(--slate-50); border-radius: var(--radius); padding: 14px; display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .poster-name { font-size: 15px; font-weight: 700; }
+  .poster-meta { font-size: 12px; color: var(--slate-500); margin-top: 2px; }
+  .action-row { display: flex; gap: 10px; }
+  .action-row .btn { flex: 1; }
+  .detail-section-title { font-size: 14px; font-weight: 700; color: var(--slate-900); margin: 20px 0 12px; }
+
+  /* ──────────────── POST ──────────────── */
+  #screen-post { background: var(--slate-100); }
+  .post-form { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+  .cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .cat-option {
+    background: var(--white);
+    border: 2px solid var(--slate-200);
+    border-radius: var(--radius);
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--slate-700);
+    transition: all 0.15s;
+  }
+  .cat-option.selected { border-color: var(--amber); background: var(--amber-light); color: var(--amber-dark); }
+  .cat-option .cat-em { font-size: 22px; }
+  .type-toggle { display: flex; background: var(--slate-200); border-radius: var(--radius-sm); padding: 3px; gap: 0; }
+  .type-btn { flex: 1; padding: 10px; text-align: center; border-radius: 6px; font-size: 13px; font-weight: 600; color: var(--slate-600); cursor: pointer; border: none; background: transparent; font-family: 'Inter', sans-serif; }
+  .type-btn.active { background: var(--white); color: var(--slate-900); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+  .upload-zone { background: var(--white); border: 2px dashed var(--slate-300); border-radius: var(--radius); padding: 28px; text-align: center; cursor: pointer; }
+  .upload-zone-icon { font-size: 32px; margin-bottom: 8px; }
+  .upload-zone-text { font-size: 13px; color: var(--slate-500); }
+  .upload-zone-text strong { color: var(--amber-dark); }
+  .form-note { font-size: 12px; color: var(--slate-500); margin-top: 4px; }
+  .price-row { display: flex; gap: 8px; }
+  .price-currency { width: 70px; padding: 14px 10px; border: 1.5px solid var(--slate-200); border-radius: var(--radius-sm); font-size: 15px; font-family: 'Inter', sans-serif; background: var(--white); color: var(--slate-900); outline: none; }
+  .price-input { flex: 1; }
+
+  /* ──────────────── MESSAGES ──────────────── */
+  #screen-messages { background: var(--white); }
+  .msg-header { padding: 16px 20px 8px; display: flex; align-items: center; justify-content: space-between; }
+  .msg-title { font-size: 22px; font-weight: 800; }
+  .thread-item { display: flex; align-items: flex-start; gap: 12px; padding: 14px 20px; border-bottom: 1px solid var(--slate-50); cursor: pointer; }
+  .thread-item:hover, .thread-item.active { background: var(--slate-50); }
+  .thread-body { flex: 1; min-width: 0; }
+  .thread-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
+  .thread-name { font-size: 14px; font-weight: 700; color: var(--slate-900); }
+  .thread-time { font-size: 11px; color: var(--slate-400); }
+  .thread-listing-ref { font-size: 12px; color: var(--amber-dark); font-weight: 500; margin-bottom: 2px; }
+  .thread-preview-text { font-size: 13px; color: var(--slate-500); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .unread-dot { width: 8px; height: 8px; background: var(--amber); border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+  .unread-count { background: var(--amber); color: var(--white); font-size: 11px; font-weight: 700; border-radius: 10px; padding: 2px 7px; }
+
+  /* ──────────────── THREAD ──────────────── */
+  #screen-thread { background: var(--slate-50); display: flex; flex-direction: column; height: 100%; }
+  .thread-hdr { background: var(--white); padding: 12px 16px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--slate-100); }
+  .thread-hdr-info { flex: 1; }
+  .thread-hdr-name { font-size: 15px; font-weight: 700; }
+  .thread-hdr-listing { font-size: 11px; color: var(--amber-dark); }
+  .bubbles { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+  .bubble { max-width: 75%; }
+  .bubble.sent { align-self: flex-end; }
+  .bubble.recv { align-self: flex-start; }
+  .bubble-text { padding: 10px 14px; border-radius: 16px; font-size: 14px; line-height: 1.5; }
+  .bubble.sent .bubble-text { background: var(--amber); color: var(--white); border-bottom-right-radius: 4px; }
+  .bubble.recv .bubble-text { background: var(--white); color: var(--slate-900); border-bottom-left-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+  .bubble-time { font-size: 10px; color: var(--slate-400); margin-top: 3px; }
+  .bubble.sent .bubble-time { text-align: right; }
+  .chat-input-bar { background: var(--white); border-top: 1px solid var(--slate-100); padding: 10px 16px; display: flex; gap: 10px; align-items: center; }
+  .chat-input-bar input { flex: 1; background: var(--slate-100); border: none; border-radius: var(--radius-full); padding: 11px 16px; font-size: 14px; font-family: 'Inter', sans-serif; outline: none; }
+  .send-btn { width: 42px; height: 42px; background: var(--amber); border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; flex-shrink: 0; }
+
+  /* ──────────────── PROFILE ──────────────── */
+  #screen-profile { background: var(--slate-100); }
+  .profile-hero { background: var(--white); padding: 32px 20px 24px; text-align: center; }
+  .profile-name { font-size: 20px; font-weight: 800; color: var(--slate-900); margin: 12px 0 4px; }
+  .profile-email { font-size: 13px; color: var(--slate-500); }
+  .stats-row { display: flex; margin: 20px; gap: 0; background: var(--white); border-radius: var(--radius); overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .stat-item { flex: 1; padding: 16px 8px; text-align: center; border-right: 1px solid var(--slate-100); }
+  .stat-item:last-child { border-right: none; }
+  .stat-num { font-size: 20px; font-weight: 800; color: var(--slate-900); }
+  .stat-lbl { font-size: 11px; color: var(--slate-500); margin-top: 2px; }
+  .menu-list { background: var(--white); border-radius: var(--radius); margin: 0 16px 16px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+  .menu-item { display: flex; align-items: center; gap: 14px; padding: 16px 18px; border-bottom: 1px solid var(--slate-50); cursor: pointer; }
+  .menu-item:last-child { border-bottom: none; }
+  .menu-icon { font-size: 20px; width: 28px; text-align: center; }
+  .menu-label { flex: 1; font-size: 15px; font-weight: 500; color: var(--slate-900); }
+  .menu-chevron { color: var(--slate-300); font-size: 14px; }
+  .menu-item.danger .menu-label { color: var(--red); }
+
+  /* ──────────────── SIGN UP ──────────────── */
+  #screen-signup { background: var(--white); padding: 0 24px 40px; }
+  .role-chips { display: flex; gap: 8px; }
+  .role-chip { flex: 1; padding: 10px; border: 1.5px solid var(--slate-200); border-radius: var(--radius-sm); text-align: center; font-size: 13px; font-weight: 600; color: var(--slate-600); cursor: pointer; }
+  .role-chip.selected { border-color: var(--amber); background: var(--amber-light); color: var(--amber-dark); }
+</style>
+</head>
+<body>
+
+<div class="phone-wrap">
+  <div class="phone-label">BuildsUp — Mobile App Prototype · Expo React Native</div>
+  <div class="phone">
+    <div class="notch"></div>
+
+    <!-- STATUS BAR -->
+    <div class="status-bar" id="status-bar">
+      <div class="status-time">9:41</div>
+      <div class="status-icons">📶 WiFi 🔋</div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="phone-content" id="phone-content">
+
+      <!-- ════ SIGN IN ════ -->
+      <div class="screen active" id="screen-signin">
+        <div class="signin-logo">
+          <div class="signin-logo-icon">🏗️</div>
+          <div class="signin-logo-name">BuildsUp</div>
+          <div class="signin-tagline">Build Smarter. Source Faster.</div>
+        </div>
+        <div class="form-gap">
+          <div>
+            <label class="input-label">Email Address</label>
+            <input class="input-field" type="email" placeholder="you@company.com">
+          </div>
+          <div>
+            <label class="input-label">Password</label>
+            <input class="input-field" type="password" placeholder="Your password">
+          </div>
+        </div>
+        <div class="forgot-link">Forgot password?</div>
+        <button class="btn btn-primary btn-full" onclick="goHome()">Sign In</button>
+        <div style="display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--slate-400);font-size:13px">
+          <div style="flex:1;height:1px;background:var(--slate-200)"></div>or<div style="flex:1;height:1px;background:var(--slate-200)"></div>
+        </div>
+        <button class="btn btn-outline btn-full" onclick="showScreen('screen-signup')">Create Account</button>
+        <div class="auth-alt" style="margin-top:24px">By signing in you agree to our <a>Terms</a> &amp; <a>Privacy Policy</a></div>
+      </div>
+
+      <!-- ════ SIGN UP ════ -->
+      <div class="screen" id="screen-signup">
+        <div class="screen-header" style="position:relative;top:auto">
+          <div class="back-btn" onclick="showScreen('screen-signin')">←</div>
+          <div class="screen-title">Create Account</div>
+        </div>
+        <div style="padding:20px;display:flex;flex-direction:column;gap:14px">
+          <div>
+            <label class="input-label">Full Name</label>
+            <input class="input-field" placeholder="Rahul Sharma">
+          </div>
+          <div>
+            <label class="input-label">Email</label>
+            <input class="input-field" type="email" placeholder="rahul@company.com">
+          </div>
+          <div>
+            <label class="input-label">Password</label>
+            <input class="input-field" type="password" placeholder="Min. 8 characters">
+          </div>
+          <div>
+            <label class="input-label">I want to</label>
+            <div class="role-chips">
+              <div class="role-chip" onclick="selectRole(this)">Buy</div>
+              <div class="role-chip selected" onclick="selectRole(this)">Sell</div>
+              <div class="role-chip" onclick="selectRole(this)">Both</div>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-full" style="margin-top:8px" onclick="goHome()">Get Started</button>
+          <div style="font-size:12px;color:var(--slate-400);text-align:center">By continuing you agree to our <span style="color:var(--amber-dark)">Terms</span> and <span style="color:var(--amber-dark)">Privacy Policy</span></div>
+        </div>
+      </div>
+
+      <!-- ════ HOME TAB ════ -->
+      <div class="screen" id="screen-home">
+        <div class="home-hero">
+          <div class="home-greeting">Good morning ☀️</div>
+          <div class="home-name">Rajesh Kumar 👋</div>
+          <div class="search-bar" onclick="setTab('browse')">
+            <span>🔍</span>
+            <input placeholder="Search materials, services..." readonly>
+          </div>
+        </div>
+
+        <div style="padding:16px 0 6px">
+          <div style="padding:0 20px;margin-bottom:8px;font-size:13px;font-weight:700;color:var(--slate-900)">Browse Categories</div>
+          <div class="cats-scroll">
+            <div class="cat-chip cat-materials" onclick="setTab('browse')">
+              <div class="cat-chip-icon">🧱</div>
+              <div class="cat-chip-label">Materials</div>
+            </div>
+            <div class="cat-chip cat-chemicals" onclick="setTab('browse')">
+              <div class="cat-chip-icon">⚗️</div>
+              <div class="cat-chip-label">Chemicals</div>
+            </div>
+            <div class="cat-chip cat-services" onclick="setTab('browse')">
+              <div class="cat-chip-icon">🔧</div>
+              <div class="cat-chip-label">Services</div>
+            </div>
+            <div class="cat-chip cat-labour" onclick="setTab('browse')">
+              <div class="cat-chip-icon">👷</div>
+              <div class="cat-chip-label">Labour</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="home-section">
+          <div class="home-section-header">
+            <div class="home-section-title">Recent Availability</div>
+            <div class="see-all" onclick="setTab('browse')">See all</div>
+          </div>
+        </div>
+        <div class="h-scroll" style="padding-bottom:16px">
+          <div class="listing-hcard" onclick="showDetail()">
+            <span class="badge badge-materials">Materials</span>
+            <div class="listing-hcard-title">TMT Steel Bars Fe500 — 16mm &amp; 20mm</div>
+            <div class="listing-hcard-loc">📍 Mumbai, MH</div>
+            <div class="listing-hcard-price">₹62,500 <span>/ MT</span></div>
+          </div>
+          <div class="listing-hcard" onclick="showDetail()">
+            <span class="badge badge-chemicals">Chemicals</span>
+            <div class="listing-hcard-title">Epoxy Flooring Compound 2-Part High Gloss</div>
+            <div class="listing-hcard-loc">📍 Pune, MH</div>
+            <div class="listing-hcard-price">₹280 <span>/ kg</span></div>
+          </div>
+          <div class="listing-hcard" onclick="showDetail()">
+            <span class="badge badge-services">Services</span>
+            <div class="listing-hcard-title">Structural Design Services — ISO Certified</div>
+            <div class="listing-hcard-loc">📍 Chennai, TN</div>
+            <div class="listing-hcard-price">₹45,000 <span>/ project</span></div>
+          </div>
+        </div>
+
+        <div class="home-section">
+          <div class="home-section-header">
+            <div class="home-section-title">Open Requirements</div>
+            <div class="see-all" onclick="setTab('browse')">See all</div>
+          </div>
+        </div>
+        <div class="h-scroll" style="padding-bottom:24px">
+          <div class="listing-hcard" onclick="showDetail()">
+            <span class="badge badge-labour">Labour</span>
+            <div class="listing-hcard-title">Electricians Required — Commercial Project</div>
+            <div class="listing-hcard-loc">📍 Bengaluru, KA</div>
+            <div class="listing-hcard-price">₹850 <span>/ day</span></div>
+          </div>
+          <div class="listing-hcard" onclick="showDetail()">
+            <span class="badge badge-materials">Materials</span>
+            <div class="listing-hcard-title">OPC 53-Grade Cement — 500 Bags/Month</div>
+            <div class="listing-hcard-loc">📍 Hyderabad, TS</div>
+            <div class="listing-hcard-price">₹380 <span>/ bag</span></div>
+          </div>
+          <div class="listing-hcard" onclick="showDetail()">
+            <span class="badge badge-chemicals">Chemicals</span>
+            <div class="listing-hcard-title">Concrete Admixture — Superplasticiser</div>
+            <div class="listing-hcard-loc">📍 Hyderabad, TS</div>
+            <div class="listing-hcard-price">₹95 <span>/ litre</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════ BROWSE TAB ════ -->
+      <div class="screen" id="screen-browse">
+        <div class="browse-searchbar">
+          <input class="browse-input" placeholder="🔍 Search listings...">
+          <button class="filter-btn">⚙️</button>
+        </div>
+        <div class="filter-chips">
+          <div class="filter-chip active">All</div>
+          <div class="filter-chip" onclick="setChip(this)">🧱 Materials</div>
+          <div class="filter-chip" onclick="setChip(this)">⚗️ Chemicals</div>
+          <div class="filter-chip" onclick="setChip(this)">🔧 Services</div>
+          <div class="filter-chip" onclick="setChip(this)">👷 Labour</div>
+          <div class="filter-chip" onclick="setChip(this)">Availability</div>
+          <div class="filter-chip" onclick="setChip(this)">Requirement</div>
+        </div>
+        <div class="browse-count"><strong>243</strong> listings found</div>
+
+        <div class="listing-vcard cat-border-materials" onclick="showDetail()">
+          <div class="vcard-body">
+            <div class="vcard-title">TMT Steel Bars — Fe500, 16mm &amp; 20mm</div>
+            <div class="vcard-meta">
+              <span class="badge badge-materials">Materials</span>
+              <span class="badge badge-availability">Availability</span>
+            </div>
+            <div class="vcard-meta">📍 Mumbai, MH</div>
+            <div class="vcard-price">₹62,500 <span>/ MT</span></div>
+            <div class="vcard-footer">
+              <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--slate-500)">
+                <div class="avatar" style="width:24px;height:24px;font-size:9px">RK</div> Rajesh Kumar
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();showDetail()">View</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="listing-vcard cat-border-chemicals" onclick="showDetail()">
+          <div class="vcard-body">
+            <div class="vcard-title">Waterproofing Membrane — SBS Modified Bitumen</div>
+            <div class="vcard-meta">
+              <span class="badge badge-chemicals">Chemicals</span>
+              <span class="badge badge-availability">Availability</span>
+            </div>
+            <div class="vcard-meta">📍 Delhi NCR</div>
+            <div class="vcard-price">₹1,850 <span>/ roll</span></div>
+            <div class="vcard-footer">
+              <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--slate-500)">
+                <div class="avatar" style="width:24px;height:24px;font-size:9px">DW</div> Delhi Waterworks
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();showDetail()">View</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="listing-vcard cat-border-labour" onclick="showDetail()">
+          <div class="vcard-body">
+            <div class="vcard-title">Experienced Electricians Required — Commercial</div>
+            <div class="vcard-meta">
+              <span class="badge badge-labour">Labour</span>
+              <span class="badge badge-requirement">Requirement</span>
+            </div>
+            <div class="vcard-meta">📍 Bengaluru, KA</div>
+            <div class="vcard-price">₹850 <span>/ day</span></div>
+            <div class="vcard-footer">
+              <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--slate-500)">
+                <div class="avatar" style="width:24px;height:24px;font-size:9px">AM</div> Arjun Mehta
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();showDetail()">View</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="listing-vcard cat-border-services" onclick="showDetail()">
+          <div class="vcard-body">
+            <div class="vcard-title">50T Crawler Crane Available for Rent</div>
+            <div class="vcard-meta">
+              <span class="badge badge-services">Services</span>
+              <span class="badge badge-availability">Availability</span>
+            </div>
+            <div class="vcard-meta">📍 Chennai, TN</div>
+            <div class="vcard-price">₹18,000 <span>/ day</span></div>
+            <div class="vcard-footer">
+              <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--slate-500)">
+                <div class="avatar" style="width:24px;height:24px;font-size:9px">HC</div> Heavy Cranes
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();showDetail()">View</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="listing-vcard cat-border-materials" onclick="showDetail()">
+          <div class="vcard-body">
+            <div class="vcard-title">AAC Blocks Required — 4-Inch, 200 Cu.m/mo</div>
+            <div class="vcard-meta">
+              <span class="badge badge-materials">Materials</span>
+              <span class="badge badge-requirement">Requirement</span>
+            </div>
+            <div class="vcard-meta">📍 Kolkata, WB</div>
+            <div class="vcard-price">₹42 <span>/ block</span></div>
+            <div class="vcard-footer">
+              <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--slate-500)">
+                <div class="avatar" style="width:24px;height:24px;font-size:9px">BH</div> Bengal Housing
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();showDetail()">View</button>
+            </div>
+          </div>
+        </div>
+        <div style="height:16px"></div>
+      </div>
+
+      <!-- ════ DETAIL ════ -->
+      <div class="screen" id="screen-detail">
+        <div class="screen-header" style="position:relative;top:auto">
+          <div class="back-btn" id="detail-back" onclick="backFromDetail()">←</div>
+          <div class="screen-title" style="font-size:15px">Listing Detail</div>
+          <div class="header-action">🤍</div>
+        </div>
+        <div class="detail-hero">🏗️</div>
+        <div class="detail-body">
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <span class="badge badge-materials">Materials</span>
+            <span class="badge badge-availability">Availability</span>
+          </div>
+          <div class="detail-title">TMT Steel Bars — Fe500 Grade, 16mm &amp; 20mm Dia</div>
+          <div class="detail-price">₹62,500 <span>/ MT</span></div>
+          <div class="detail-specs">
+            <div class="spec-pill">📍 Mumbai, MH</div>
+            <div class="spec-pill">📦 250 MT stock</div>
+            <div class="spec-pill">📏 Min. 10 MT</div>
+            <div class="spec-pill">🚚 PAN India delivery</div>
+          </div>
+          <div class="detail-desc">High-quality Fe500 grade TMT bars by JSW Steel. Available in 16mm and 20mm diameter. Full mill test certificates provided. Ideal for residential and commercial structural construction. Lead time 5–7 working days.</div>
+          <div class="poster-card">
+            <div class="avatar avatar-md">RK</div>
+            <div style="flex:1">
+              <div class="poster-name">Rajesh Kumar</div>
+              <div class="poster-meta">⭐ 4.8 · Member since Jan 2023</div>
+              <div class="poster-meta">📞 Responds within 2 hrs</div>
+            </div>
+          </div>
+          <div class="action-row">
+            <button class="btn btn-primary" onclick="showScreen('screen-thread')">💬 Chat Now</button>
+            <button class="btn btn-outline" style="flex:0.6">📞 Call</button>
+          </div>
+
+          <div class="detail-section-title">Similar Listings</div>
+          <div class="h-scroll" style="padding:0 0 16px;margin:0 -20px;padding-left:0">
+            <div style="width:16px;flex-shrink:0"></div>
+            <div class="listing-hcard" onclick="void(0)">
+              <span class="badge badge-materials">Materials</span>
+              <div class="listing-hcard-title">MS Plates IS 2062 — 6mm to 20mm</div>
+              <div class="listing-hcard-loc">📍 Surat, GJ</div>
+              <div class="listing-hcard-price">₹71,000 <span>/ MT</span></div>
+            </div>
+            <div class="listing-hcard" onclick="void(0)">
+              <span class="badge badge-materials">Materials</span>
+              <div class="listing-hcard-title">GI Corrugated Sheets 0.4–0.6mm</div>
+              <div class="listing-hcard-loc">📍 Mumbai, MH</div>
+              <div class="listing-hcard-price">₹42 <span>/ sqft</span></div>
+            </div>
+            <div style="width:4px;flex-shrink:0"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════ POST TAB ════ -->
+      <div class="screen" id="screen-post">
+        <div class="screen-header" style="position:relative;top:auto">
+          <div class="screen-title">Post a Listing</div>
+        </div>
+        <div class="post-form">
+          <div>
+            <label class="input-label">Title *</label>
+            <input class="input-field" placeholder="e.g. TMT Steel Fe500 Available in Mumbai">
+          </div>
+
+          <div>
+            <label class="input-label">Category *</label>
+            <div class="cat-grid">
+              <div class="cat-option selected" onclick="selectCat(this)"><span class="cat-em">🧱</span> Materials</div>
+              <div class="cat-option" onclick="selectCat(this)"><span class="cat-em">⚗️</span> Chemicals</div>
+              <div class="cat-option" onclick="selectCat(this)"><span class="cat-em">🔧</span> Services</div>
+              <div class="cat-option" onclick="selectCat(this)"><span class="cat-em">👷</span> Labour</div>
+            </div>
+          </div>
+
+          <div>
+            <label class="input-label">Listing Type *</label>
+            <div class="type-toggle">
+              <button class="type-btn active" onclick="toggleType(this)">📦 Availability</button>
+              <button class="type-btn" onclick="toggleType(this)">🔍 Requirement</button>
+            </div>
+            <div class="form-note">Availability = I have this · Requirement = I need this</div>
+          </div>
+
+          <div>
+            <label class="input-label">Price</label>
+            <div class="price-row">
+              <select class="price-currency input-field" style="width:80px;flex:none">
+                <option>₹</option><option>$</option>
+              </select>
+              <input class="input-field price-input" type="number" placeholder="0.00">
+            </div>
+          </div>
+
+          <div>
+            <label class="input-label">Unit</label>
+            <input class="input-field" placeholder="e.g. per MT, per bag, per day">
+          </div>
+
+          <div>
+            <label class="input-label">Location</label>
+            <input class="input-field" placeholder="City, State">
+          </div>
+
+          <div>
+            <label class="input-label">Description</label>
+            <textarea class="input-field" style="min-height:80px;resize:none" placeholder="Describe your listing — grade, standards, delivery terms..."></textarea>
+          </div>
+
+          <div>
+            <label class="input-label">Photos</label>
+            <div class="upload-zone">
+              <div class="upload-zone-icon">📷</div>
+              <div class="upload-zone-text"><strong>Tap to add photos</strong></div>
+              <div style="font-size:11px;color:var(--slate-400);margin-top:4px">Up to 8 photos, 5MB each</div>
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-full" style="margin-top:4px;margin-bottom:8px">🚀 Post Listing</button>
+        </div>
+      </div>
+
+      <!-- ════ MESSAGES TAB ════ -->
+      <div class="screen" id="screen-messages">
+        <div class="msg-header">
+          <div class="msg-title">Messages</div>
+          <span class="unread-count">3</span>
+        </div>
+
+        <div class="thread-item" onclick="showScreen('screen-thread')">
+          <div class="avatar avatar-sm">AM</div>
+          <div class="thread-body">
+            <div class="thread-top">
+              <div class="thread-name">Arjun Mehta</div>
+              <div class="thread-time">2m</div>
+            </div>
+            <div class="thread-listing-ref">TMT Steel Bars — Fe500</div>
+            <div class="thread-preview-text">Do you deliver to Bengaluru? We need 80 MT</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+            <span class="unread-count">2</span>
+          </div>
+        </div>
+
+        <div class="thread-item" onclick="showScreen('screen-thread')">
+          <div class="avatar avatar-sm">NR</div>
+          <div class="thread-body">
+            <div class="thread-top">
+              <div class="thread-name">Nandini Realtors</div>
+              <div class="thread-time">1h</div>
+            </div>
+            <div class="thread-listing-ref">MS Plates — IS 2062</div>
+            <div class="thread-preview-text">Thank you, we'll place the order today</div>
+          </div>
+          <div class="unread-dot" style="opacity:0"></div>
+        </div>
+
+        <div class="thread-item" onclick="showScreen('screen-thread')">
+          <div class="avatar avatar-sm">SP</div>
+          <div class="thread-body">
+            <div class="thread-top">
+              <div class="thread-name">Sanjay Parekh</div>
+              <div class="thread-time">Yesterday</div>
+            </div>
+            <div class="thread-listing-ref">Steel Wire Rope</div>
+            <div class="thread-preview-text">Can you provide mill test certificates?</div>
+          </div>
+          <span class="unread-count">1</span>
+        </div>
+
+        <div class="thread-item" onclick="showScreen('screen-thread')">
+          <div class="avatar avatar-sm" style="background:#EFF6FF;color:var(--cat-materials)">GP</div>
+          <div class="thread-body">
+            <div class="thread-top">
+              <div class="thread-name">G. Patel Infra</div>
+              <div class="thread-time">2d</div>
+            </div>
+            <div class="thread-listing-ref">Structural Steel Fabrication</div>
+            <div class="thread-preview-text">Please share your Q3 project capacity</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════ THREAD ════ -->
+      <div class="screen" id="screen-thread" style="display:flex;flex-direction:column;height:100%">
+        <div class="thread-hdr">
+          <div class="back-btn" onclick="showScreen('screen-messages')">←</div>
+          <div class="avatar avatar-sm">AM</div>
+          <div class="thread-hdr-info">
+            <div class="thread-hdr-name">Arjun Mehta</div>
+            <div class="thread-hdr-listing">TMT Steel Bars — Fe500 Grade</div>
+          </div>
+        </div>
+        <div class="bubbles">
+          <div class="bubble recv">
+            <div class="bubble-text">Hello! I saw your TMT bar listing. We need ~80 MT of Fe500 16mm for a project in Bengaluru. Is this available?</div>
+            <div class="bubble-time">Mon 10:32</div>
+          </div>
+          <div class="bubble sent">
+            <div class="bubble-text">Hi Arjun! Yes, 250 MT in stock. 80 MT no problem. Do you need delivery or arranging own transport?</div>
+            <div class="bubble-time">Mon 10:45</div>
+          </div>
+          <div class="bubble recv">
+            <div class="bubble-text">We need site delivery. What are the charges to Bengaluru? Do you have mill test certificates?</div>
+            <div class="bubble-time">Mon 11:02</div>
+          </div>
+          <div class="bubble sent">
+            <div class="bubble-text">Yes, full MTC from JSW Steel. Delivery ~₹2,200–2,500/MT to Bengaluru. 5–7 working days. Shall I send a formal quote with GST?</div>
+            <div class="bubble-time">Today 9:14</div>
+          </div>
+        </div>
+        <div class="chat-input-bar">
+          <input placeholder="Type a message...">
+          <button class="send-btn">➤</button>
+        </div>
+      </div>
+
+      <!-- ════ PROFILE TAB ════ -->
+      <div class="screen" id="screen-profile">
+        <div class="profile-hero">
+          <div class="avatar avatar-lg" style="margin:0 auto">RK</div>
+          <div class="profile-name">Rajesh Kumar</div>
+          <div class="profile-email">rajesh@steeltraders.com</div>
+          <div style="display:flex;gap:8px;justify-content:center;margin-top:12px">
+            <span class="badge badge-materials">Verified Seller</span>
+            <span style="font-size:12px;color:var(--green)">✅ GST Registered</span>
+          </div>
+        </div>
+        <div class="stats-row">
+          <div class="stat-item">
+            <div class="stat-num">12</div>
+            <div class="stat-lbl">Listings</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num">38</div>
+            <div class="stat-lbl">Enquiries</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num">4.8⭐</div>
+            <div class="stat-lbl">Rating</div>
+          </div>
+        </div>
+        <div class="menu-list">
+          <div class="menu-item"><div class="menu-icon">📋</div><div class="menu-label">My Listings</div><div class="menu-chevron">›</div></div>
+          <div class="menu-item"><div class="menu-icon">🔖</div><div class="menu-label">Saved Listings</div><div class="menu-chevron">›</div></div>
+          <div class="menu-item"><div class="menu-icon">👤</div><div class="menu-label">Edit Profile</div><div class="menu-chevron">›</div></div>
+          <div class="menu-item"><div class="menu-icon">🔔</div><div class="menu-label">Notifications</div><div class="menu-chevron">›</div></div>
+          <div class="menu-item"><div class="menu-icon">❓</div><div class="menu-label">Help &amp; Support</div><div class="menu-chevron">›</div></div>
+        </div>
+        <div class="menu-list">
+          <div class="menu-item danger" onclick="showScreen('screen-signin')"><div class="menu-icon">🚪</div><div class="menu-label">Sign Out</div><div class="menu-chevron">›</div></div>
+        </div>
+        <div style="height:16px"></div>
+      </div>
+
+    </div><!-- end phone-content -->
+
+    <!-- TAB BAR -->
+    <div class="tab-bar" id="tab-bar">
+      <div class="tab-item active" id="tab-home" onclick="setTab('home')">
+        <div class="tab-icon">🏠</div>
+        <div class="tab-label">Home</div>
+      </div>
+      <div class="tab-item" id="tab-browse" onclick="setTab('browse')">
+        <div class="tab-icon">🔍</div>
+        <div class="tab-label">Browse</div>
+      </div>
+      <div class="tab-item tab-post" id="tab-post" onclick="setTab('post')">
+        <div class="tab-icon-wrap">➕</div>
+        <div class="tab-label" style="margin-top:4px">Post</div>
+      </div>
+      <div class="tab-item" id="tab-messages" onclick="setTab('messages')">
+        <div class="tab-icon" style="position:relative">💬<span class="tab-badge">3</span></div>
+        <div class="tab-label">Messages</div>
+      </div>
+      <div class="tab-item" id="tab-profile" onclick="setTab('profile')">
+        <div class="tab-icon">👤</div>
+        <div class="tab-label">Profile</div>
+      </div>
+    </div>
+
+    <div class="home-indicator"><div class="home-bar"></div></div>
+  </div><!-- end phone -->
+</div>
+
+<script>
+  const tabScreens = { home:'screen-home', browse:'screen-browse', post:'screen-post', messages:'screen-messages', profile:'screen-profile' };
+  const noTabScreens = ['screen-signin','screen-signup','screen-detail','screen-thread'];
+  let prevTab = 'home';
+
+  function showScreen(id) {
+    document.querySelectorAll('.phone-content .screen').forEach(s => { s.classList.remove('active'); s.style.display = 'none'; });
+    const el = document.getElementById(id);
+    if (el) { el.classList.add('active'); el.style.display = id === 'screen-thread' ? 'flex' : 'block'; }
+    document.getElementById('phone-content').scrollTop = 0;
+    const tabBar = document.getElementById('tab-bar');
+    tabBar.style.display = noTabScreens.includes(id) ? 'none' : 'flex';
+    const statusBar = document.getElementById('status-bar');
+    if (id === 'screen-signin' || id === 'screen-signup') { statusBar.className = 'status-bar'; }
+    else { statusBar.className = 'status-bar'; }
+  }
+
+  function setTab(tab) {
+    prevTab = tab;
+    const id = tabScreens[tab];
+    showScreen(id);
+    document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+    const tabEl = document.getElementById('tab-' + tab);
+    if (tabEl) tabEl.classList.add('active');
+  }
+
+  function goHome() {
+    setTab('home');
+  }
+
+  function showDetail() {
+    showScreen('screen-detail');
+  }
+
+  function backFromDetail() {
+    setTab(prevTab === 'home' ? 'home' : 'browse');
+  }
+
+  function setChip(el) {
+    el.closest('.filter-chips').querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  function selectCat(el) {
+    el.closest('.cat-grid').querySelectorAll('.cat-option').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  function toggleType(el) {
+    el.closest('.type-toggle').querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  function selectRole(el) {
+    el.closest('.role-chips').querySelectorAll('.role-chip').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  // Init
+  showScreen('screen-signin');
+</script>
+</body>
+</html>
