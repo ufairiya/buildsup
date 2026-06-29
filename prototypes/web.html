@@ -11,7 +11,7 @@
     --amber: #F59E0B; --amber-dark: #D97706; --amber-light: #FEF3C7;
     --slate-900: #1E293B; --slate-700: #334155; --slate-500: #64748B;
     --slate-300: #CBD5E1; --slate-200: #E2E8F0; --slate-100: #F1F5F9; --slate-50: #F8FAFC;
-    --blue: #3B82F6; --purple: #8B5CF6; --green: #10B981; --orange: #F97316;
+    --blue: #3B82F6; --purple: #8B5CF6; --green: #10B981; --orange: #F97316; --teal: #0891B2;
     --red: #EF4444; --white: #fff;
     --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
     --shadow: 0 4px 12px rgba(0,0,0,0.08);
@@ -49,6 +49,7 @@
   .badge-labour { background: #FFF7ED; color: var(--orange); }
   .badge-availability { background: #ECFDF5; color: var(--green); }
   .badge-requirement { background: #FFF7ED; color: #EA580C; }
+  .badge-surplus { background: #ECFEFF; color: var(--teal); }
 
   /* ── LISTING CARD ── */
   .listing-card { background: var(--white); border: 1px solid var(--slate-200); border-radius: var(--radius-lg); padding: 20px; display: flex; flex-direction: column; gap: 12px; transition: box-shadow 0.15s, transform 0.15s; cursor: pointer; }
@@ -288,6 +289,7 @@
         <option>Chemicals</option>
         <option>Services</option>
         <option>Labour</option>
+        <option>Home Surplus</option>
       </select>
       <input type="text" placeholder="Search for TMT bars, cement, electricians...">
       <button class="btn btn-primary" onclick="showScreen('screen-browse')">🔍 Search</button>
@@ -313,6 +315,7 @@
         <div class="cat-pill" onclick="showScreen('screen-browse')">⚗️ Chemicals</div>
         <div class="cat-pill" onclick="showScreen('screen-browse')">🔧 Services</div>
         <div class="cat-pill" onclick="showScreen('screen-browse')">👷 Labour</div>
+        <div class="cat-pill" onclick="showScreen('screen-browse')">🏘️ Home Surplus</div>
         <div class="cat-pill" onclick="showScreen('screen-browse')">📦 Availability</div>
         <div class="cat-pill" onclick="showScreen('screen-browse')">🔍 Requirements</div>
       </div>
@@ -421,6 +424,38 @@
           </div>
         </div>
 
+        <div class="listing-card" onclick="showScreen('screen-detail')">
+          <div class="card-header">
+            <div class="card-badges">
+              <span class="badge badge-surplus">🏘️ Home Surplus</span>
+              <span class="badge badge-availability">Availability</span>
+            </div>
+          </div>
+          <div class="card-title">Leftover Floor Tiles — Vitrified 600×600mm, 3 Boxes</div>
+          <div class="card-meta">📍 Koramangala, Bengaluru</div>
+          <div class="card-price">₹800 <span>/ box (negotiable)</span></div>
+          <div class="card-footer">
+            <div class="poster-info"><div class="avatar">SK</div> Sunita K.</div>
+            <button class="btn btn-primary btn-sm">View Details</button>
+          </div>
+        </div>
+
+        <div class="listing-card" onclick="showScreen('screen-detail')">
+          <div class="card-header">
+            <div class="card-badges">
+              <span class="badge badge-surplus">🏘️ Home Surplus</span>
+              <span class="badge badge-availability">Availability</span>
+            </div>
+          </div>
+          <div class="card-title">Unused Electrical Conduit Pipes &amp; Switches — Post-Renovation</div>
+          <div class="card-meta">📍 Andheri, Mumbai</div>
+          <div class="card-price">₹1,500 <span>/ lot</span></div>
+          <div class="card-footer">
+            <div class="poster-info"><div class="avatar">VT</div> Varun T.</div>
+            <button class="btn btn-primary btn-sm">View Details</button>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -463,6 +498,7 @@
         <label><input type="checkbox"> ⚗️ Chemicals</label>
         <label><input type="checkbox"> 🔧 Services</label>
         <label><input type="checkbox"> 👷 Labour</label>
+        <label><input type="checkbox"> 🏘️ Home Surplus</label>
       </div>
 
       <div class="filter-group">
@@ -571,6 +607,30 @@
           <div class="card-meta">📍 Jamshedpur, JH</div>
           <div class="card-price">₹1,100 <span>/ day</span></div>
           <div class="card-footer"><div class="poster-info"><div class="avatar">SI</div> Steel India Ltd.</div><button class="btn btn-primary btn-sm">View</button></div>
+        </div>
+
+        <div class="listing-card" onclick="showScreen('screen-detail')">
+          <div class="card-badges"><span class="badge badge-surplus">🏘️ Home Surplus</span><span class="badge badge-availability">Availability</span></div>
+          <div class="card-title">Leftover Floor Tiles — Vitrified 600×600mm, 3 Boxes</div>
+          <div class="card-meta">📍 Koramangala, Bengaluru</div>
+          <div class="card-price">₹800 <span>/ box (negotiable)</span></div>
+          <div class="card-footer"><div class="poster-info"><div class="avatar">SK</div> Sunita K.</div><button class="btn btn-primary btn-sm">View</button></div>
+        </div>
+
+        <div class="listing-card" onclick="showScreen('screen-detail')">
+          <div class="card-badges"><span class="badge badge-surplus">🏘️ Home Surplus</span><span class="badge badge-availability">Availability</span></div>
+          <div class="card-title">Unused Paint — Asian Paints Apex, 4L Cans × 6</div>
+          <div class="card-meta">📍 Powai, Mumbai</div>
+          <div class="card-price">₹350 <span>/ can</span></div>
+          <div class="card-footer"><div class="poster-info"><div class="avatar">RD</div> Rohit D.</div><button class="btn btn-primary btn-sm">View</button></div>
+        </div>
+
+        <div class="listing-card" onclick="showScreen('screen-detail')">
+          <div class="card-badges"><span class="badge badge-surplus">🏘️ Home Surplus</span><span class="badge badge-availability">Availability</span></div>
+          <div class="card-title">Leftover Plumbing Fittings — CPVC Pipes &amp; Elbows</div>
+          <div class="card-meta">📍 Andheri, Mumbai</div>
+          <div class="card-price">₹1,500 <span>/ lot</span></div>
+          <div class="card-footer"><div class="poster-info"><div class="avatar">VT</div> Varun T.</div><button class="btn btn-primary btn-sm">View</button></div>
         </div>
 
       </div>
@@ -906,6 +966,7 @@
                 <option>⚗️ Chemicals</option>
                 <option>🔧 Services</option>
                 <option>👷 Labour</option>
+                <option>🏘️ Home Surplus</option>
               </select>
             </div>
             <div class="form-group">
